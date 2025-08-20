@@ -1,0 +1,8 @@
+{"level":"info","message":"🚀 MDM Server rodando em http://10.71.1.209:3000","timestamp":"2025-08-20T16:27:11.270Z"}
+{"level":"info","message":"📱 Provisionamento disponível em: http://10.71.1.209:3000/provision/{token}","timestamp":"2025-08-20T16:27:11.278Z"}
+{"level":"info","message":"📊 Dashboard disponível em: http://10.71.1.209:3000/dashboard","timestamp":"2025-08-20T16:27:11.284Z"}
+{"level":"warn","message":"Desconectado do MongoDB, tentando reconectar...","timestamp":"2025-08-20T16:27:16.270Z"}
+{"level":"info","message":"🚀 MDM Server rodando em http://10.71.1.209:3000","timestamp":"2025-08-20T16:37:28.061Z"}
+{"level":"info","message":"📱 Provisionamento disponível em: http://10.71.1.209:3000/provision/{token}","timestamp":"2025-08-20T16:37:28.069Z"}
+{"level":"info","message":"📊 Dashboard disponível em: http://10.71.1.209:3000/dashboard","timestamp":"2025-08-20T16:37:28.074Z"}
+{"level":"warn","message":"Desconectado do MongoDB, tentando reconectar...","timestamp":"2025-08-20T16:37:33.046Z"}
