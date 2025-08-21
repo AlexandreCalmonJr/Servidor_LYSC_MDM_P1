@@ -120,15 +120,32 @@ const deviceRoutes = (logger, getApiLimiter, modifyApiLimiter, auth) => {
     }
   });
 
-  // Listar dispositivos
+  // Listar dispositivos com filtragem por setor para usuários comuns
   router.get('/', auth, getApiLimiter, async (req, res) => {
     try {
-      const devices = await Device.find().lean();
+      let devicesQuery = {};
+
+      // Se o usuário não for admin, filtra pelo setor dele
+      if (req.user.role === 'user') {
+        const userSector = req.user.sector;
+        if (userSector && userSector !== 'Global') { // 'Global' pode ser um setor para admins ou sem restrição
+          devicesQuery.sector = userSector;
+          logger.info(`Usuário '${req.user.username}' (setor: ${userSector}) solicitando dispositivos do seu setor.`);
+        } else {
+          // Se o usuário 'user' não tem setor definido, ou setor 'Global', retorna nada ou trata como erro
+          logger.warn(`Usuário '${req.user.username}' com role 'user' mas sem setor definido ou setor 'Global'.`);
+          return res.status(403).json({ error: 'Acesso negado: Setor do usuário não definido ou inválido para esta operação.' });
+        }
+      } else {
+        logger.info(`Usuário '${req.user.username}' (role: ${req.user.role}) solicitando TODOS os dispositivos.`);
+      }
+
+      const devices = await Device.find(devicesQuery).lean();
       const devicesWithUnit = await Promise.all(devices.map(async (device) => {
         const unit = await mapIpToUnit(device.ip_address);
         return { ...device, unit };
       }));
-      logger.info(`Lista de dispositivos retornada: ${devicesWithUnit.length} dispositivos`);
+      logger.info(`Lista de dispositivos retornada: ${devicesWithUnit.length} dispositivos (filtrado por setor: ${devicesQuery.sector || 'Nenhum'})`);
       res.status(200).json(devicesWithUnit);
     } catch (err) {
       logger.error(`Erro ao obter dispositivos: ${err.message}`);
@@ -148,13 +165,19 @@ const deviceRoutes = (logger, getApiLimiter, modifyApiLimiter, auth) => {
   
     try {
       const { serial_number } = req.query;
-  
+      // Adicionar filtro por setor para usuários comuns também aqui, se necessário
+      const device = await Device.findOne({ serial_number });
+      if (req.user.role === 'user' && device && device.sector !== req.user.sector) {
+          logger.warn(`Usuário '${req.user.username}' tentou acessar comandos para dispositivo fora do seu setor: ${serial_number}`);
+          return res.status(403).json({ error: 'Acesso negado: Dispositivo fora do seu setor de permissão.' });
+      }
+
       const commands = await Command.find({ serial_number, status: 'pending' }).lean();
       if (commands.length > 0) {
         await Command.updateMany({ serial_number, status: 'pending' }, { status: 'sent' });
         logger.info(`Comandos pendentes encontrados para ${serial_number}: ${commands.length}`);
       }
-  
+
       res.status(200).json(commands.map(cmd => ({
         id: cmd._id.toString(),
         command_type: cmd.command,
@@ -178,18 +201,29 @@ const deviceRoutes = (logger, getApiLimiter, modifyApiLimiter, auth) => {
         logger.warn('Faltam campos obrigatórios: device_name ou command');
         return res.status(400).json({ error: 'device_name e command são obrigatórios' });
       }
-  
+
+      // Verificação de setor antes de executar o comando
+      const device = await Device.findOne({ serial_number });
+      if (!device) {
+          logger.warn(`Dispositivo não encontrado: ${serial_number}`);
+          return res.status(404).json({ error: 'Dispositivo não encontrado' });
+      }
+      if (req.user.role === 'user' && device.sector !== req.user.sector) {
+          logger.warn(`Usuário '${req.user.username}' tentou executar comando em dispositivo fora do seu setor: ${serial_number}`);
+          return res.status(403).json({ error: 'Acesso negado: Dispositivo fora do seu setor de permissão.' });
+      }
+
       if (command === 'set_maintenance') {
         if (typeof maintenance_status !== 'boolean') {
           logger.warn(`maintenance_status deve ser booleano para ${serial_number}`);
           return res.status(400).json({ error: 'maintenance_status deve ser um valor booleano' });
         }
-  
+
         const updateFields = {
           maintenance_status,
           maintenance_ticket: maintenance_ticket || '',
         };
-  
+
         if (maintenance_history_entry) {
           try {
             const historyEntry = JSON.parse(maintenance_history_entry);
@@ -203,18 +237,18 @@ const deviceRoutes = (logger, getApiLimiter, modifyApiLimiter, auth) => {
             return res.status(400).json({ error: 'Formato inválido para maintenance_history_entry' });
           }
         }
-  
-        const device = await Device.findOneAndUpdate(
+
+        const updatedDevice = await Device.findOneAndUpdate(
           { serial_number },
           updateFields,
           { new: true }
         );
-  
-        if (!device) {
+
+        if (!updatedDevice) { // Dupla checagem, embora já verificada acima
           logger.warn(`Dispositivo não encontrado: ${serial_number}`);
           return res.status(404).json({ error: 'Dispositivo não encontrado' });
         }
-  
+
         logger.info(`Comando set_maintenance executado para ${serial_number}: status=${maintenance_status}`);
         return res.status(200).json({ message: `Status de manutenção atualizado para ${serial_number}` });
       } else {
@@ -237,12 +271,12 @@ const deviceRoutes = (logger, getApiLimiter, modifyApiLimiter, auth) => {
   router.post('/command-result', auth, modifyApiLimiter, async (req, res) => {
     try {
       const { command_id, serial_number, success, result, error_message } = req.body;
-  
+
       if (!serial_number && !command_id) {
         logger.warn('serial_number ou command_id ausente');
         return res.status(400).json({ error: 'serial_number ou command_id é obrigatório' });
       }
-  
+
       let command;
       if (command_id) {
         command = await Command.findByIdAndUpdate(command_id, {
@@ -261,15 +295,23 @@ const deviceRoutes = (logger, getApiLimiter, modifyApiLimiter, auth) => {
           { new: true, sort: { createdAt: -1 } }
         );
       }
-  
+
       if (!command) {
         logger.warn(`Comando não encontrado para serial_number: ${serial_number}`);
         return res.status(404).json({ error: 'Comando não encontrado' });
       }
-  
+
+      // Verificação de setor para garantir que o usuário não manipule comandos de outros setores
+      const device = await Device.findOne({ serial_number: command.serial_number });
+      if (req.user.role === 'user' && device && device.sector !== req.user.sector) {
+          logger.warn(`Usuário '${req.user.username}' tentou reportar comando para dispositivo fora do seu setor: ${serial_number}`);
+          return res.status(403).json({ error: 'Acesso negado: Dispositivo fora do seu setor de permissão.' });
+      }
+
+
       logger.info(`Resultado do comando recebido: ${command.command} para ${serial_number} - ${success ? 'sucesso' : 'falha'}`);
       res.status(200).json({ message: 'Resultado do comando registrado' });
-  
+
     } catch (err) {
       logger.error(`Erro ao registrar resultado do comando: ${err.message}`);
       res.status(500).json({ error: 'Erro interno do servidor' });
@@ -280,11 +322,18 @@ const deviceRoutes = (logger, getApiLimiter, modifyApiLimiter, auth) => {
   router.delete('/:serial_number', auth, modifyApiLimiter, async (req, res) => {
     try {
       const { serial_number } = req.params;
-      const device = await Device.findOneAndDelete({ serial_number: serial_number });
+      // Verificação de setor antes de excluir
+      const device = await Device.findOne({ serial_number: serial_number });
       if (!device) {
-        logger.warn(`Dispositivo não encontrado: ${serial_number}`);
-        return res.status(404).json({ error: 'Dispositivo não encontrado' });
+          logger.warn(`Dispositivo não encontrado: ${serial_number}`);
+          return res.status(404).json({ error: 'Dispositivo não encontrado' });
       }
+      if (req.user.role === 'user' && device.sector !== req.user.sector) {
+          logger.warn(`Usuário '${req.user.username}' tentou excluir dispositivo fora do seu setor: ${serial_number}`);
+          return res.status(403).json({ error: 'Acesso negado: Dispositivo fora do seu setor de permissão.' });
+      }
+
+      const deletedDevice = await Device.findOneAndDelete({ serial_number: serial_number });
       logger.info(`Dispositivo excluído: ${serial_number}`);
       res.status(200).json({ message: `Dispositivo ${serial_number} excluído com sucesso` });
     } catch (err) {

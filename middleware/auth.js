@@ -12,8 +12,9 @@ const auth = (req, res, next) => {
     // Tenta validar como JWT (nova lógica)
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = decoded; 
-        req.logger.info(`Autenticação bem-sucedida (JWT) para usuário: ${decoded.username}`);
+        // Garante que 'sector' está no req.user para filtragem
+        req.user = { ...decoded, sector: decoded.sector || 'Desconhecido' }; 
+        req.logger.info(`Autenticação bem-sucedida (JWT) para usuário: ${decoded.username}, Setor: ${req.user.sector}`);
         return next();
     } catch (err) {
         req.logger.debug(`Falha na validação JWT: ${err.message}`);
@@ -21,8 +22,8 @@ const auth = (req, res, next) => {
 
     // Tenta validar como token estático (lógica legacy)
     if (token === process.env.AUTH_TOKEN) {
-        // Define um usuário "genérico" para compatibilidade
-        req.user = { role: 'admin', username: 'legacy_user' };
+        // Para compatibilidade, define um usuário "genérico" com role 'admin' e setor 'Global'
+        req.user = { role: 'admin', username: 'legacy_user', sector: 'Global' }; 
         req.logger.info(`Autenticação bem-sucedida (Legacy Token)`);
         return next();
     }

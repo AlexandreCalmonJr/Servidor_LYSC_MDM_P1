@@ -7,7 +7,7 @@ const { modifyApiLimiter, getApiLimiter, enrollLimiter } = require('../middlewar
 const auth = require('../middleware/auth');
 const authorize = require('../middleware/role');
 const requestLogger = require('../middleware/logging');
-const errorHandler = require('../middleware/error');
+const errorHandler = require('../middleware/error'); // CORRECTED: Removed the extra ' = require'
 
 // Import the route modules
 const deviceRoutes = require('../routes/deviceRoutes');
@@ -16,7 +16,7 @@ const configProfileRoutes = require('../routes/configProfileRoutes');
 const bssidRoutes = require('../routes/bssidRoutes');
 const unitRoutes = require('../routes/unitRoutes');
 const serverRoutes = require('../routes/serverRoutes');
-const authRoutes = require('../routes/authRoutes'); // <--- ADD THIS LINE
+const authRoutes = require('../routes/authRoutes');
 
 const expressConfig = (app, logger) => {
   // Middleware de compressão
@@ -37,15 +37,17 @@ const expressConfig = (app, logger) => {
   // Configurar EJS e arquivos estáticos
   app.set('view engine', 'ejs');
   app.set('views', path.join(__dirname, '..', 'views'));
-  app.use('/public', express.static(path.join(__dirname, '..', 'public')));
 
-  // Middleware de log de requisições
+  // MUITO IMPORTANTE: SIRVA ARQUIVOS ESTÁTICOS PRIMEIRO
+  app.use(express.static(path.join(__dirname, '..', 'public')));
+
+  // Middleware de log de requisições (após o static, para não logar arquivos estáticos)
   app.use(requestLogger(logger));
 
   // As rotas de autenticação NÃO USAM o middleware de auth
-  app.use('/api/auth', authRoutes()); // <--- PASSING THE LOGGER HERE IS OPTIONAL, THE ROUTE ITSELF DOESN'T NEED IT
+  app.use('/api/auth', authRoutes());
 
-  // Rotas da API
+  // Rotas da API (estas devem vir depois dos arquivos estáticos)
   app.use('/api/provisioning', provisioningRoutes(logger, modifyApiLimiter, enrollLimiter, auth));
   app.use('/api/devices', deviceRoutes(logger, getApiLimiter, modifyApiLimiter, auth));
   app.use('/api/config-profiles', configProfileRoutes(logger, modifyApiLimiter, auth));
@@ -53,15 +55,15 @@ const expressConfig = (app, logger) => {
   app.use('/api/bssid-mappings', bssidRoutes(logger, getApiLimiter, modifyApiLimiter, auth));
   app.use('/api/server', serverRoutes(logger, getApiLimiter, auth));
   
-  // Rotas de visualização
+  // Rotas de visualização (se você tiver páginas EJS renderizadas pelo servidor)
   app.get('/dashboard', auth, authorize('admin'), require('../routes/serverRoutes').renderDashboard(logger));
   app.get('/provision/:token', require('../routes/provisioningRoutes').renderProvisioningPage(logger));
   app.get('/', (req, res) => {
-    res.render('index', { token: process.env.AUTH_TOKEN });
+    res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));
   });
 
-  // Middleware global de tratamento de erros
-  app.use(errorHandler(logger));
+  // Middleware global de tratamento de erros (sempre por último)
+  app.use(errorHandler(logger)); // CORRECTED: Call errorHandler with logger
 };
 
 module.exports = expressConfig;

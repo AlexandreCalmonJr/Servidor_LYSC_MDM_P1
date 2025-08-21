@@ -9,14 +9,15 @@ const registerUser = async (req, res) => {
     }
 
     try {
-        const { username, email, password, role } = req.body;
+        const { username, email, password, role, sector } = req.body;
         
         const existingUser = await User.findOne({ $or: [{ username }, { email }] });
         if (existingUser) {
             return res.status(409).json({ error: 'Usuário ou email já existe' });
         }
         
-        const user = new User({ username, email, password, role });
+        // Inclui 'sector' no novo usuário
+        const user = new User({ username, email, password, role, sector });
         await user.save();
         
         res.status(201).json({ message: 'Usuário registrado com sucesso' });
@@ -39,8 +40,9 @@ const loginUser = async (req, res) => {
             return res.status(401).json({ error: 'Credenciais inválidas' });
         }
         
+        // Inclui 'sector' no payload do JWT
         const token = jwt.sign(
-            { id: user._id, role: user.role, username: user.username },
+            { id: user._id, role: user.role, username: user.username, sector: user.sector },
             process.env.JWT_SECRET,
             { expiresIn: '1h' }
         );

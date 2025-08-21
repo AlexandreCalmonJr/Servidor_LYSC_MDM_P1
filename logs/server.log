@@ -6,3 +6,74 @@
 {"level":"info","message":"📱 Provisionamento disponível em: http://10.71.1.209:3000/provision/{token}","timestamp":"2025-08-20T16:37:28.069Z"}
 {"level":"info","message":"📊 Dashboard disponível em: http://10.71.1.209:3000/dashboard","timestamp":"2025-08-20T16:37:28.074Z"}
 {"level":"warn","message":"Desconectado do MongoDB, tentando reconectar...","timestamp":"2025-08-20T16:37:33.046Z"}
+{"level":"info","message":"🚀 MDM Server rodando em http://192.168.56.1:3000","timestamp":"2025-08-21T01:14:42.948Z"}
+{"level":"info","message":"📱 Provisionamento disponível em: http://192.168.56.1:3000/provision/{token}","timestamp":"2025-08-21T01:14:42.957Z"}
+{"level":"info","message":"📊 Dashboard disponível em: http://192.168.56.1:3000/dashboard","timestamp":"2025-08-21T01:14:42.964Z"}
+{"level":"info","message":"Conectado ao MongoDB","timestamp":"2025-08-21T01:14:42.983Z"}
+{"level":"info","message":"Requisição recebida: GET /dashboard from 192.168.56.1","timestamp":"2025-08-21T01:14:49.393Z"}
+{"level":"warn","message":"Tentativa de acesso sem token: 192.168.56.1","timestamp":"2025-08-21T01:14:49.395Z"}
+{"level":"info","message":"Requisição recebida: GET /favicon.ico from 192.168.56.1","timestamp":"2025-08-21T01:14:49.424Z"}
+{"level":"info","message":"Requisição recebida: GET /dashboard from 192.168.56.1","timestamp":"2025-08-21T01:16:10.997Z"}
+{"level":"warn","message":"Tentativa de acesso sem token: 192.168.56.1","timestamp":"2025-08-21T01:16:10.998Z"}
+{"level":"info","message":"Requisição recebida: GET /api/auth/register from 192.168.56.1","timestamp":"2025-08-21T01:19:26.482Z"}
+{"level":"info","message":"Requisição recebida: GET /api/auth/register from 192.168.56.1","timestamp":"2025-08-21T01:19:41.983Z"}
+{"level":"info","message":"Requisição recebida: GET /api/devices from 192.168.56.1","timestamp":"2025-08-21T01:23:23.110Z"}
+{"level":"warn","message":"Tentativa de acesso sem token: 192.168.56.1","timestamp":"2025-08-21T01:23:23.111Z"}
+{"level":"info","message":"Requisição recebida: POST /api/auth/register%20/%0A%20%20-H%20%22Content-Type:%20application/json%22%20/%0A%20%20-H%20%22Authorization:%20Bearer%20hap@2025%22%20/%0A%20%20-d%20'%7B%0A%20%20%20%20%22username%22:%20%22admin_geral%22,%0A%20%20%20%20%22email%22:%20%22admin@suaempresa.com%22,%0A%20%20%20%20%22password%22:%20%22MinhaSenha from 192.168.56.1","timestamp":"2025-08-21T01:23:45.185Z"}
+{"level":"info","message":"Requisição recebida: POST /api/auth/register%20/%0A%20%20-H%20%22Content-Type:%20application/json%22%20/%0A%20%20-H%20%22Authorization:%20Bearer%20hap@2025%22%20/%0A%20%20-d%20'%7B%0A%20%20%20%20%22username%22:%20%22admin_geral%22,%0A%20%20%20%20%22email%22:%20%22admin@suaempresa.com%22,%0A%20%20%20%20%22password%22:%20%22MinhaSenha from 192.168.56.1","timestamp":"2025-08-21T01:24:57.689Z"}
+{"ip":"127.0.0.1","level":"error","message":"Erro não tratado: Unexpected token ''', \"'{username:\" is not valid JSON","stack":"SyntaxError: Unexpected token ''', \"'{username:\" is not valid JSON\n    at JSON.parse (<anonymous>)\n    at createStrictSyntaxError (C:\\Users\\Administrator\\Servidor_LYSC_MDM_P1\\node_modules\\body-parser\\lib\\types\\json.js:156:10)\n    at parse (C:\\Users\\Administrator\\Servidor_LYSC_MDM_P1\\node_modules\\body-parser\\lib\\types\\json.js:71:15)\n    at C:\\Users\\Administrator\\Servidor_LYSC_MDM_P1\\node_modules\\body-parser\\lib\\read.js:123:18\n    at AsyncResource.runInAsyncScope (node:async_hooks:211:14)\n    at invokeCallback (C:\\Users\\Administrator\\Servidor_LYSC_MDM_P1\\node_modules\\raw-body\\index.js:238:16)\n    at done (C:\\Users\\Administrator\\Servidor_LYSC_MDM_P1\\node_modules\\raw-body\\index.js:227:7)\n    at IncomingMessage.onEnd (C:\\Users\\Administrator\\Servidor_LYSC_MDM_P1\\node_modules\\raw-body\\index.js:287:7)\n    at IncomingMessage.emit (node:events:518:28)\n    at endReadableNT (node:internal/streams/readable:1698:12)","timestamp":"2025-08-21T01:27:16.466Z","url":"/api/auth/register"}
+{"ip":"127.0.0.1","level":"error","message":"Erro não tratado: Unexpected token ''', \"'{username:\" is not valid JSON","stack":"SyntaxError: Unexpected token ''', \"'{username:\" is not valid JSON\n    at JSON.parse (<anonymous>)\n    at createStrictSyntaxError (C:\\Users\\Administrator\\Servidor_LYSC_MDM_P1\\node_modules\\body-parser\\lib\\types\\json.js:156:10)\n    at parse (C:\\Users\\Administrator\\Servidor_LYSC_MDM_P1\\node_modules\\body-parser\\lib\\types\\json.js:71:15)\n    at C:\\Users\\Administrator\\Servidor_LYSC_MDM_P1\\node_modules\\body-parser\\lib\\read.js:123:18\n    at AsyncResource.runInAsyncScope (node:async_hooks:211:14)\n    at invokeCallback (C:\\Users\\Administrator\\Servidor_LYSC_MDM_P1\\node_modules\\raw-body\\index.js:238:16)\n    at done (C:\\Users\\Administrator\\Servidor_LYSC_MDM_P1\\node_modules\\raw-body\\index.js:227:7)\n    at IncomingMessage.onEnd (C:\\Users\\Administrator\\Servidor_LYSC_MDM_P1\\node_modules\\raw-body\\index.js:287:7)\n    at IncomingMessage.emit (node:events:518:28)\n    at endReadableNT (node:internal/streams/readable:1698:12)","timestamp":"2025-08-21T01:27:59.665Z","url":"/api/auth/register"}
+{"ip":"192.168.56.1","level":"error","message":"Erro não tratado: Unexpected token ''', \"'{username:\" is not valid JSON","stack":"SyntaxError: Unexpected token ''', \"'{username:\" is not valid JSON\n    at JSON.parse (<anonymous>)\n    at createStrictSyntaxError (C:\\Users\\Administrator\\Servidor_LYSC_MDM_P1\\node_modules\\body-parser\\lib\\types\\json.js:156:10)\n    at parse (C:\\Users\\Administrator\\Servidor_LYSC_MDM_P1\\node_modules\\body-parser\\lib\\types\\json.js:71:15)\n    at C:\\Users\\Administrator\\Servidor_LYSC_MDM_P1\\node_modules\\body-parser\\lib\\read.js:123:18\n    at AsyncResource.runInAsyncScope (node:async_hooks:211:14)\n    at invokeCallback (C:\\Users\\Administrator\\Servidor_LYSC_MDM_P1\\node_modules\\raw-body\\index.js:238:16)\n    at done (C:\\Users\\Administrator\\Servidor_LYSC_MDM_P1\\node_modules\\raw-body\\index.js:227:7)\n    at IncomingMessage.onEnd (C:\\Users\\Administrator\\Servidor_LYSC_MDM_P1\\node_modules\\raw-body\\index.js:287:7)\n    at IncomingMessage.emit (node:events:518:28)\n    at endReadableNT (node:internal/streams/readable:1698:12)","timestamp":"2025-08-21T01:28:00.958Z","url":"/api/auth/register"}
+{"level":"info","message":"Requisição recebida: POST /api/auth/register from 127.0.0.1","timestamp":"2025-08-21T01:29:30.049Z"}
+{"level":"info","message":"Autenticação bem-sucedida (Legacy Token)","timestamp":"2025-08-21T01:29:30.050Z"}
+{"level":"info","message":"🚀 MDM Server rodando em http://192.168.56.1:3000","timestamp":"2025-08-21T01:31:50.986Z"}
+{"level":"info","message":"📱 Provisionamento disponível em: http://192.168.56.1:3000/provision/{token}","timestamp":"2025-08-21T01:31:50.995Z"}
+{"level":"info","message":"📊 Dashboard disponível em: http://192.168.56.1:3000/dashboard","timestamp":"2025-08-21T01:31:51.001Z"}
+{"level":"info","message":"Conectado ao MongoDB","timestamp":"2025-08-21T01:31:51.019Z"}
+{"level":"info","message":"Requisição recebida: POST /api/auth/login from 127.0.0.1","timestamp":"2025-08-21T01:31:56.163Z"}
+{"level":"info","message":"Requisição recebida: POST /api/auth/login from 127.0.0.1","timestamp":"2025-08-21T01:32:11.624Z"}
+{"level":"info","message":"Requisição recebida: POST /api/auth/login from 127.0.0.1","timestamp":"2025-08-21T01:32:14.334Z"}
+{"level":"info","message":"Requisição recebida: POST /api/auth/register from 127.0.0.1","timestamp":"2025-08-21T01:32:52.648Z"}
+{"level":"info","message":"Autenticação bem-sucedida (Legacy Token)","timestamp":"2025-08-21T01:32:52.649Z"}
+{"level":"info","message":"Requisição recebida: POST /api/auth/register from 127.0.0.1","timestamp":"2025-08-21T01:34:02.431Z"}
+{"level":"info","message":"Autenticação bem-sucedida (Legacy Token)","timestamp":"2025-08-21T01:34:02.432Z"}
+{"level":"info","message":"Requisição recebida: POST /api/auth/login from 127.0.0.1","timestamp":"2025-08-21T01:34:07.470Z"}
+{"level":"info","message":"Requisição recebida: POST /api/auth/login from 127.0.0.1","timestamp":"2025-08-21T01:34:58.521Z"}
+{"level":"info","message":"🚀 MDM Server rodando em http://192.168.56.1:3000","timestamp":"2025-08-21T01:36:06.235Z"}
+{"level":"info","message":"📱 Provisionamento disponível em: http://192.168.56.1:3000/provision/{token}","timestamp":"2025-08-21T01:36:06.244Z"}
+{"level":"info","message":"📊 Dashboard disponível em: http://192.168.56.1:3000/dashboard","timestamp":"2025-08-21T01:36:06.250Z"}
+{"level":"info","message":"Conectado ao MongoDB","timestamp":"2025-08-21T01:36:06.266Z"}
+{"level":"info","message":"Requisição recebida: POST /api/auth/login from 127.0.0.1","timestamp":"2025-08-21T01:36:19.696Z"}
+{"level":"info","message":"Requisição recebida: GET /.well-known/appspecific/com.chrome.devtools.json from 127.0.0.1","timestamp":"2025-08-21T01:37:29.543Z"}
+{"level":"info","message":"Requisição recebida: GET /js/users.js from 127.0.0.1","timestamp":"2025-08-21T01:37:29.554Z"}
+{"level":"info","message":"Requisição recebida: GET /js/devices.js from 127.0.0.1","timestamp":"2025-08-21T01:37:29.562Z"}
+{"level":"info","message":"Requisição recebida: GET /api/server/status from 127.0.0.1","timestamp":"2025-08-21T01:37:30.753Z"}
+{"level":"warn","message":"Tentativa de acesso sem token: 127.0.0.1","timestamp":"2025-08-21T01:37:30.754Z"}
+{"level":"info","message":"Requisição recebida: GET /.well-known/appspecific/com.chrome.devtools.json from 127.0.0.1","timestamp":"2025-08-21T01:37:32.037Z"}
+{"level":"info","message":"Requisição recebida: GET /favicon.ico from 127.0.0.1","timestamp":"2025-08-21T01:37:32.057Z"}
+{"level":"info","message":"Requisição recebida: POST /api/auth/login from 127.0.0.1","timestamp":"2025-08-21T01:37:37.927Z"}
+{"level":"info","message":"Requisição recebida: GET /.well-known/appspecific/com.chrome.devtools.json from 127.0.0.1","timestamp":"2025-08-21T01:37:38.027Z"}
+{"level":"info","message":"Requisição recebida: GET /js/devices.js from 127.0.0.1","timestamp":"2025-08-21T01:37:38.037Z"}
+{"level":"info","message":"Requisição recebida: GET /js/users.js from 127.0.0.1","timestamp":"2025-08-21T01:37:38.040Z"}
+{"level":"info","message":"Requisição recebida: GET /api/server/status from 127.0.0.1","timestamp":"2025-08-21T01:37:38.046Z"}
+{"level":"info","message":"Autenticação bem-sucedida (JWT) para usuário: admin, Setor: Global","timestamp":"2025-08-21T01:37:38.049Z"}
+{"level":"info","message":"Métricas do servidor retornadas: CPU 14.31%, Memória 35.8%","timestamp":"2025-08-21T01:37:38.062Z"}
+{"level":"info","message":"Requisição recebida: GET /api/devices from 127.0.0.1","timestamp":"2025-08-21T01:37:38.083Z"}
+{"level":"info","message":"Autenticação bem-sucedida (JWT) para usuário: admin, Setor: Global","timestamp":"2025-08-21T01:37:38.085Z"}
+{"level":"info","message":"Usuário 'admin' (role: admin) solicitando TODOS os dispositivos.","timestamp":"2025-08-21T01:37:38.086Z"}
+{"level":"info","message":"Lista de dispositivos retornada: 1 dispositivos (filtrado por setor: Nenhum)","timestamp":"2025-08-21T01:37:38.089Z"}
+{"level":"info","message":"Requisição recebida: GET /.well-known/appspecific/com.chrome.devtools.json from 127.0.0.1","timestamp":"2025-08-21T01:37:59.767Z"}
+{"level":"info","message":"🚀 MDM Server rodando em http://192.168.56.1:3000","timestamp":"2025-08-21T01:40:58.333Z"}
+{"level":"info","message":"📱 Provisionamento disponível em: http://192.168.56.1:3000/provision/{token}","timestamp":"2025-08-21T01:40:58.341Z"}
+{"level":"info","message":"📊 Dashboard disponível em: http://192.168.56.1:3000/dashboard","timestamp":"2025-08-21T01:40:58.347Z"}
+{"level":"info","message":"Conectado ao MongoDB","timestamp":"2025-08-21T01:40:58.365Z"}
+{"level":"info","message":"Requisição recebida: GET /js/users.js from 127.0.0.1","timestamp":"2025-08-21T01:41:02.131Z"}
+{"level":"info","message":"Requisição recebida: GET /js/devices.js from 127.0.0.1","timestamp":"2025-08-21T01:41:02.134Z"}
+{"level":"info","message":"Requisição recebida: GET /.well-known/appspecific/com.chrome.devtools.json from 127.0.0.1","timestamp":"2025-08-21T01:41:02.142Z"}
+{"level":"info","message":"Requisição recebida: GET /api/server/status from 127.0.0.1","timestamp":"2025-08-21T01:41:02.151Z"}
+{"level":"info","message":"Autenticação bem-sucedida (JWT) para usuário: admin, Setor: Global","timestamp":"2025-08-21T01:41:02.157Z"}
+{"level":"info","message":"Métricas do servidor retornadas: CPU 14.1%, Memória 36.37%","timestamp":"2025-08-21T01:41:02.172Z"}
+{"level":"info","message":"Requisição recebida: GET /api/devices from 127.0.0.1","timestamp":"2025-08-21T01:41:02.177Z"}
+{"level":"info","message":"Autenticação bem-sucedida (JWT) para usuário: admin, Setor: Global","timestamp":"2025-08-21T01:41:02.179Z"}
+{"level":"info","message":"Usuário 'admin' (role: admin) solicitando TODOS os dispositivos.","timestamp":"2025-08-21T01:41:02.179Z"}
+{"level":"info","message":"Lista de dispositivos retornada: 1 dispositivos (filtrado por setor: Nenhum)","timestamp":"2025-08-21T01:41:02.188Z"}

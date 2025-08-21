@@ -26,6 +26,13 @@ const UserSchema = new mongoose.Schema({
         enum: ['user', 'admin'],
         default: 'user'
     },
+    // NOVO CAMPO: Setor ao qual o usuário pertence
+    sector: {
+        type: String,
+        required: function() { return this.role === 'user'; }, // Obrigatório para usuários comuns
+        default: 'Global', // Valor padrão para admin ou se não especificado
+        trim: true
+    },
     created_at: {
         type: Date,
         default: Date.now

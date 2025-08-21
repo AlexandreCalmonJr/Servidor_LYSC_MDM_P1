@@ -18,14 +18,30 @@ const authRoutes = () => {
     router.post('/register', auth, authorize('admin'), modifyApiLimiter, [
         body('username').notEmpty().withMessage('Username é obrigatório'),
         body('email').isEmail().withMessage('Email inválido'),
-        body('password').isLength({ min: 6 }).withMessage('A senha deve ter no mínimo 6 caracteres')
+        body('password').isLength({ min: 6 }).withMessage('A senha deve ter no mínimo 6 caracteres'),
+        body('role').isIn(['user', 'admin']).withMessage('Permissão inválida'),
+        // Validação condicional para 'sector'
+        body('sector').custom((value, { req }) => {
+            if (req.body.role === 'user' && (!value || value.trim() === '')) {
+                throw new Error('Setor é obrigatório para usuários comuns');
+            }
+            return true;
+        })
     ], registerUser);
 
     router.get('/users', auth, authorize('admin'), getApiLimiter, listUsers);
     
     router.put('/users/:id', auth, authorize('admin'), modifyApiLimiter, [
         body('username').optional().notEmpty().withMessage('Username não pode ser vazio'),
-        body('email').optional().isEmail().withMessage('Email inválido')
+        body('email').optional().isEmail().withMessage('Email inválido'),
+        body('role').optional().isIn(['user', 'admin']).withMessage('Permissão inválida'),
+        // Validação condicional para 'sector' na atualização
+        body('sector').optional().custom((value, { req }) => {
+            if (req.body.role === 'user' && (!value || value.trim() === '')) {
+                throw new Error('Setor é obrigatório para usuários comuns');
+            }
+            return true;
+        })
     ], updateUser);
     
     router.delete('/users/:id', auth, authorize('admin'), modifyApiLimiter, deleteUser);
