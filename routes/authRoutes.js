@@ -1,6 +1,6 @@
 const express = require('express');
 const { body } = require('express-validator');
-const { registerUser, loginUser, listUsers, updateUser, deleteUser } = require('../controllers/authController');
+const { registerUser, loginUser, listUsers, updateUser, deleteUser, verifyToken, changePassword } = require('../controllers/authController');
 const { modifyApiLimiter, getApiLimiter } = require('../middleware/rateLimiters');
 const auth = require('../middleware/auth');
 const authorize = require('../middleware/role');
@@ -13,6 +13,15 @@ const authRoutes = () => {
         body('username').notEmpty().withMessage('Username é obrigatório'),
         body('password').notEmpty().withMessage('Senha é obrigatória')
     ], loginUser);
+
+    // Rota para verificar token (protegida)
+    router.get('/verify', auth, verifyToken);
+
+    // Rota para alterar senha (protegida - qualquer usuário logado)
+    router.post('/change-password', auth, modifyApiLimiter, [
+        body('currentPassword').notEmpty().withMessage('Senha atual é obrigatória'),
+        body('newPassword').isLength({ min: 6 }).withMessage('A nova senha deve ter no mínimo 6 caracteres')
+    ], changePassword);
 
     // Rotas protegidas (apenas admin)
     router.post('/register', auth, authorize('admin'), modifyApiLimiter, [
