@@ -1399,3 +1399,40 @@
 {"level":"info","message":"Autenticação bem-sucedida (JWT) para usuário: admin, Setor: Global","timestamp":"2025-08-23T03:03:02.982Z"}
 {"level":"info","message":"Usuário 'admin' (role: admin) solicitando TODOS os dispositivos.","timestamp":"2025-08-23T03:03:02.983Z"}
 {"level":"info","message":"Lista de dispositivos retornada: 0 dispositivos (filtrado por setor: Nenhum)","timestamp":"2025-08-23T03:03:02.984Z"}
+{"level":"info","message":"🚀 MDM Server rodando em http://10.71.1.209:3000","timestamp":"2025-08-23T15:12:07.816Z"}
+{"level":"info","message":"📱 Provisionamento disponível em: http://10.71.1.209:3000/provision/{token}","timestamp":"2025-08-23T15:12:07.823Z"}
+{"level":"info","message":"📊 Dashboard disponível em: http://10.71.1.209:3000/dashboard","timestamp":"2025-08-23T15:12:07.828Z"}
+{"level":"info","message":"Conectado ao MongoDB","timestamp":"2025-08-23T15:12:07.838Z"}
+{"level":"info","message":"Requisição recebida: GET /api/devices from 10.71.48.119","timestamp":"2025-08-23T15:12:47.849Z"}
+{"level":"info","message":"Autenticação bem-sucedida (Legacy Token)","timestamp":"2025-08-23T15:12:47.850Z"}
+{"level":"info","message":"Usuário 'legacy_user' (role: admin) solicitando TODOS os dispositivos.","timestamp":"2025-08-23T15:12:47.854Z"}
+{"level":"info","message":"Lista de dispositivos retornada: 2 dispositivos (Role: admin, Setor: Global)","timestamp":"2025-08-23T15:12:47.856Z"}
+{"level":"info","message":"Requisição recebida: POST /api/devices/data from 10.71.48.119","timestamp":"2025-08-23T15:12:47.923Z"}
+{"level":"info","message":"Autenticação bem-sucedida (Legacy Token)","timestamp":"2025-08-23T15:12:47.923Z"}
+{"level":"info","message":"Dados recebidos de 10.71.48.119: {\"device_name\":\"Galaxy A05 TI \",\"device_model\":\"SM-A055M\",\"device_id\":\"UP1A.231005.007\",\"serial_number\":\"R9QX200JD6H\",\"imei\":\"354974382248761\",\"sector\":\"TI\",\"floor\":\"Térreo\",\"mac_address_radio\":\"c8:66:5d:84:18:66\",\"ip_address\":\"10.71.48.119\",\"network\":\"\\\"PEP\\\"\",\"battery\":59,\"last_seen\":\"2025-08-23T12:12:47.973290\",\"last_sync\":\"2025-08-23T12:12:38.562999\"}","timestamp":"2025-08-23T15:12:47.927Z"}
+{"level":"info","message":"Dados do dispositivo processados: {\"device_name\":\"Galaxy A05 TI \",\"device_model\":\"SM-A055M\",\"device_id\":\"UP1A.231005.007\",\"serial_number\":\"R9QX200JD6H\",\"imei\":\"354974382248761\",\"battery\":59,\"network\":\"\\\"PEP\\\"\",\"host\":\"N/A\",\"sector\":\"Desconhecido\",\"floor\":\"Desconhecido\",\"mac_address_radio\":\"c8:66:5d:84:18:66\",\"last_sync\":\"2025-08-23T12:12:38.562999\",\"secure_android_id\":\"N/A\",\"ip_address\":\"10.71.48.119\",\"wifi_ipv6\":\"N/A\",\"wifi_gateway_ip\":\"N/A\",\"wifi_broadcast\":\"N/A\",\"wifi_submask\":\"N/A\",\"last_seen\":\"2025-08-23T12:12:47.973290\"}","timestamp":"2025-08-23T15:12:47.929Z"}
+{"level":"info","message":"Dispositivo R9QX200JD6H salvo/atualizado com sucesso","timestamp":"2025-08-23T15:12:47.937Z"}
+{"level":"info","message":"Requisição recebida: POST /api/devices/data from 10.71.48.119","timestamp":"2025-08-23T15:12:50.331Z"}
+{"level":"info","message":"Autenticação bem-sucedida (Legacy Token)","timestamp":"2025-08-23T15:12:50.331Z"}
+{"level":"info","message":"Dados recebidos de 10.71.48.119: {\"device_name\":\"Galaxy A05 TI \",\"device_model\":\"SM-A055M\",\"device_id\":\"UP1A.231005.007\",\"serial_number\":\"R9QX200JD6H\",\"imei\":\"354974382248761\",\"sector\":\"TI\",\"floor\":\"Térreo\",\"mac_address_radio\":\"c8:66:5d:84:18:66\",\"ip_address\":\"10.71.48.119\",\"network\":\"\\\"PEP\\\"\",\"battery\":59,\"last_seen\":\"2025-08-23T12:12:50.378637\",\"last_sync\":\"2025-08-23T12:12:48.006990\"}","timestamp":"2025-08-23T15:12:50.332Z"}
+{"level":"info","message":"Dados do dispositivo processados: {\"device_name\":\"Galaxy A05 TI \",\"device_model\":\"SM-A055M\",\"device_id\":\"UP1A.231005.007\",\"serial_number\":\"R9QX200JD6H\",\"imei\":\"354974382248761\",\"battery\":59,\"network\":\"\\\"PEP\\\"\",\"host\":\"N/A\",\"sector\":\"Desconhecido\",\"floor\":\"Desconhecido\",\"mac_address_radio\":\"c8:66:5d:84:18:66\",\"last_sync\":\"2025-08-23T12:12:48.006990\",\"secure_android_id\":\"N/A\",\"ip_address\":\"10.71.48.119\",\"wifi_ipv6\":\"N/A\",\"wifi_gateway_ip\":\"N/A\",\"wifi_broadcast\":\"N/A\",\"wifi_submask\":\"N/A\",\"last_seen\":\"2025-08-23T12:12:50.378637\"}","timestamp":"2025-08-23T15:12:50.335Z"}
+{"level":"info","message":"Dispositivo R9QX200JD6H salvo/atualizado com sucesso","timestamp":"2025-08-23T15:12:50.338Z"}
+{"level":"info","message":"Requisição recebida: GET /api/devices/commands?serial_number=R9QX200JD6H from 10.71.48.119","timestamp":"2025-08-23T15:12:50.376Z"}
+{"level":"info","message":"Autenticação bem-sucedida (Legacy Token)","timestamp":"2025-08-23T15:12:50.376Z"}
+{"level":"info","message":"Listando 1 APKs disponíveis via publicRoutes","timestamp":"2025-08-23T15:12:53.315Z"}
+{"level":"info","message":"Requisição recebida: GET /public/mdm_client.apk from 10.71.48.119","timestamp":"2025-08-23T15:12:56.677Z"}
+{"level":"info","message":"Requisição recebida: GET /public/mdm_client.apk from 10.71.48.119","timestamp":"2025-08-23T15:13:01.802Z"}
+{"level":"info","message":"Requisição recebida: GET /public/mdm_client.apk from 10.71.48.119","timestamp":"2025-08-23T15:13:31.409Z"}
+{"level":"info","message":"Requisição recebida: GET /api/devices/commands?serial_number=R9QX200JD6H from 10.71.48.119","timestamp":"2025-08-23T15:13:50.364Z"}
+{"level":"info","message":"Autenticação bem-sucedida (Legacy Token)","timestamp":"2025-08-23T15:13:50.365Z"}
+{"level":"info","message":"Requisição recebida: GET /api/devices/commands?serial_number=R9QX200JD6H from 10.71.48.119","timestamp":"2025-08-23T15:14:50.361Z"}
+{"level":"info","message":"Autenticação bem-sucedida (Legacy Token)","timestamp":"2025-08-23T15:14:50.362Z"}
+{"level":"info","message":"Requisição recebida: GET /api/devices/commands?serial_number=R9QX200JD6H from 10.71.48.119","timestamp":"2025-08-23T15:15:50.399Z"}
+{"level":"info","message":"Autenticação bem-sucedida (Legacy Token)","timestamp":"2025-08-23T15:15:50.400Z"}
+{"level":"info","message":"Requisição recebida: GET /api/devices/commands?serial_number=R9QX200JD6H from 10.71.48.119","timestamp":"2025-08-23T15:16:50.367Z"}
+{"level":"info","message":"Autenticação bem-sucedida (Legacy Token)","timestamp":"2025-08-23T15:16:50.368Z"}
+{"level":"info","message":"🚀 MDM Server rodando em http://10.71.1.209:3000","timestamp":"2025-08-23T15:17:09.130Z"}
+{"level":"info","message":"📱 Provisionamento disponível em: http://10.71.1.209:3000/provision/{token}","timestamp":"2025-08-23T15:17:09.138Z"}
+{"level":"info","message":"📊 Dashboard disponível em: http://10.71.1.209:3000/dashboard","timestamp":"2025-08-23T15:17:09.143Z"}
+{"level":"info","message":"Conectado ao MongoDB","timestamp":"2025-08-23T15:17:09.157Z"}
+{"level":"info","message":"Listando 1 APKs disponíveis via publicRoutes","timestamp":"2025-08-23T15:17:11.239Z"}

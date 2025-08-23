@@ -17,6 +17,7 @@ const bssidRoutes = require('../routes/bssidRoutes');
 const unitRoutes = require('../routes/unitRoutes');
 const serverRoutes = require('../routes/serverRoutes');
 const authRoutes = require('../routes/authRoutes');
+const publicRoutes = require('../routes/publicRoutes');
 
 const expressConfig = (app, logger) => {
   // Middleware de compressão
@@ -37,9 +38,10 @@ const expressConfig = (app, logger) => {
   // Configurar EJS e arquivos estáticos
   app.set('view engine', 'ejs');
   app.set('views', path.join(__dirname, '..', 'views'));
+  app.use(publicRoutes(logger, getApiLimiter));
 
   // MUITO IMPORTANTE: SIRVA ARQUIVOS ESTÁTICOS PRIMEIRO
-  app.use(express.static(path.join(__dirname, '..', 'public')));
+  app.use('/public', express.static(path.join(__dirname, '..', 'public')));
 
   // Middleware de log de requisições (após o static, para não logar arquivos estáticos)
   app.use(requestLogger(logger));

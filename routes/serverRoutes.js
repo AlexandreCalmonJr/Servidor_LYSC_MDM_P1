@@ -39,7 +39,7 @@ const serverRoutes = (logger, getApiLimiter, auth) => {
   });
 
   // Listar APKs na pasta public (ajustado para compatibilidade com Flutter)
-  router.get('/apks.json', getApiLimiter, async (req, res) => {
+  router.get('/public/apks.json', getApiLimiter, async (req, res) => {
     try {
       const publicDir = path.join(__dirname, '..', 'public');
       const files = await fs.readdir(publicDir);
@@ -50,9 +50,10 @@ const serverRoutes = (logger, getApiLimiter, auth) => {
             const stats = await fs.stat(path.join(publicDir, file));
             return {
               name: file,
+              // Certifique-se que getLocalIPAddress() está funcionando como esperado
               url: `http://${getLocalIPAddress()}:${process.env.PORT || 3000}/public/${file}`,
-              size: stats.size, // Tamanho em bytes
-              lastModified: stats.mtime // Data de modificação
+              size: stats.size,
+              lastModified: stats.mtime
             };
           })
       );
