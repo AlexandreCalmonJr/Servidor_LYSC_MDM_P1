@@ -46,6 +46,11 @@ const deviceRoutes = (logger, getApiLimiter, modifyApiLimiter, auth) => {
       let data = req.body;
       logger.info(`Dados recebidos de ${req.ip}: ${JSON.stringify(data)}`);
 
+
+      const newLocation = await mapMacAddressRadioToLocation(data.mac_address_radio || 'N/A');
+
+
+
       const location = await mapMacAddressRadioToLocation(data.mac_address_radio || 'N/A');
       const deviceData = {
         device_name: data.device_name || 'unknown',
@@ -69,6 +74,8 @@ const deviceRoutes = (logger, getApiLimiter, modifyApiLimiter, auth) => {
         last_seen: data.last_seen || new Date().toISOString(),
       };
       logger.info(`Dados do dispositivo processados: ${JSON.stringify(deviceData)}`);
+
+      const existingDevice = await Device.findOne({ serial_number: deviceData.serial_number });
 
       if (existingDevice && existingDevice.mac_address_radio !== deviceData.mac_address_radio) {
         logger.info(`Nova localização detetada para ${deviceData.serial_number}. A registar histórico.`);
