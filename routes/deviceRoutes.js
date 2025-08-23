@@ -144,35 +144,45 @@ const deviceRoutes = (logger, getApiLimiter, modifyApiLimiter, auth) => {
   // Listar dispositivos com filtragem por setor para usuários comuns
   router.get('/', auth, getApiLimiter, async (req, res) => {
     try {
-      let devicesQuery = {};
-
-      // Se o usuário não for admin, filtra pelo setor dele
+      // Buscar TODOS os dispositivos primeiro
+      const allDevices = await Device.find({}).lean();
+      let filteredDevices = allDevices;
+  
+      // Se o usuário não for admin, filtrar por nome do dispositivo
       if (req.user.role === 'user') {
         const userSector = req.user.sector;
-        if (userSector && userSector !== 'Global') { // 'Global' pode ser um setor para admins ou sem restrição
-          devicesQuery.sector = userSector;
-          logger.info(`Usuário '${req.user.username}' (setor: ${userSector}) solicitando dispositivos do seu setor.`);
+        if (userSector && userSector !== 'Global') {
+          // Separar os prefixos por vírgula e limpar espaços
+          const prefixes = userSector.split(',').map(p => p.trim().toLowerCase());
+          
+          // Filtrar dispositivos cujo nome começa com algum dos prefixos
+          filteredDevices = allDevices.filter(device => {
+            const deviceName = (device.device_name || '').toLowerCase();
+            return prefixes.some(prefix => deviceName.startsWith(prefix));
+          });
+          
+          logger.info(`Usuário '${req.user.username}' (prefixos: ${prefixes.join(', ')}) - ${filteredDevices.length} dispositivos filtrados de ${allDevices.length} totais.`);
         } else {
-          // Se o usuário 'user' não tem setor definido, ou setor 'Global', retorna nada ou trata como erro
           logger.warn(`Usuário '${req.user.username}' com role 'user' mas sem setor definido ou setor 'Global'.`);
           return res.status(403).json({ error: 'Acesso negado: Setor do usuário não definido ou inválido para esta operação.' });
         }
       } else {
         logger.info(`Usuário '${req.user.username}' (role: ${req.user.role}) solicitando TODOS os dispositivos.`);
       }
-
-      const devices = await Device.find(devicesQuery).lean();
-      const devicesWithUnit = await Promise.all(devices.map(async (device) => {
+  
+      // Aplicar mapIpToUnit apenas nos dispositivos filtrados
+      const devicesWithUnit = await Promise.all(filteredDevices.map(async (device) => {
         const unit = await mapIpToUnit(device.ip_address);
         return { ...device, unit };
       }));
-      logger.info(`Lista de dispositivos retornada: ${devicesWithUnit.length} dispositivos (filtrado por setor: ${devicesQuery.sector || 'Nenhum'})`);
+      
+      logger.info(`Lista de dispositivos retornada: ${devicesWithUnit.length} dispositivos (Role: ${req.user.role}, Setor: ${req.user.sector || 'N/A'})`);
       res.status(200).json(devicesWithUnit);
     } catch (err) {
       logger.error(`Erro ao obter dispositivos: ${err.message}`);
       res.status(500).json({ error: 'Erro interno do servidor' });
     }
-  });
+  });;
 
   // Obter comandos pendentes
   router.get('/commands', auth, getApiLimiter, [
