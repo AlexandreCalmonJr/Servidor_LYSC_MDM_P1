@@ -22,7 +22,7 @@ const createAdminUser = async () => {
 
         // Criar usuário administrador padrão
         const adminUser = new User({
-            username: 'admin12',
+            username: 'admin',
             email: 'admin@mdm.local',
             password: 'admin123', // Será criptografada automaticamente pelo modelo
             role: 'admin',

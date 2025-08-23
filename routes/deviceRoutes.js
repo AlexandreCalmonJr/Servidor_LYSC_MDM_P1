@@ -2,6 +2,7 @@ const express = require('express');
 const { body, validationResult, query } = require('express-validator');
 const Device = require('../models/Device');
 const Command = require('../models/Command');
+const LocationHistory = require('../models/LocationHistory');
 const { mapIpToUnit, mapMacAddressRadioToLocation } = require('../utils/mappings');
 
 const deviceRoutes = (logger, getApiLimiter, modifyApiLimiter, auth) => {
@@ -40,11 +41,11 @@ const deviceRoutes = (logger, getApiLimiter, modifyApiLimiter, auth) => {
       logger.warn(`Erros de validação: ${JSON.stringify(errors.array())}`);
       return res.status(400).json({ errors: errors.array() });
     }
-  
+
     try {
       let data = req.body;
       logger.info(`Dados recebidos de ${req.ip}: ${JSON.stringify(data)}`);
-  
+
       const location = await mapMacAddressRadioToLocation(data.mac_address_radio || 'N/A');
       const deviceData = {
         device_name: data.device_name || 'unknown',
@@ -67,13 +68,26 @@ const deviceRoutes = (logger, getApiLimiter, modifyApiLimiter, auth) => {
         wifi_submask: data.wifi_submask || 'N/A',
         last_seen: data.last_seen || new Date().toISOString(),
       };
-  
+      logger.info(`Dados do dispositivo processados: ${JSON.stringify(deviceData)}`);
+
+      if (existingDevice && existingDevice.mac_address_radio !== deviceData.mac_address_radio) {
+        logger.info(`Nova localização detetada para ${deviceData.serial_number}. A registar histórico.`);
+        const historyEntry = new LocationHistory({
+          serial_number: deviceData.serial_number,
+          bssid: deviceData.mac_address_radio,
+          sector: newLocation.sector,
+          floor: newLocation.floor,
+          timestamp: new Date(deviceData.last_seen)
+        });
+        await historyEntry.save();
+      }
+
       const device = await Device.findOneAndUpdate(
         { serial_number: deviceData.serial_number },
         { $set: deviceData },
         { new: true, upsert: true, setDefaultsOnInsert: true }
       );
-  
+
       logger.info(`Dispositivo ${device.serial_number} salvo/atualizado com sucesso`);
       res.status(200).json({ message: 'Dados salvos com sucesso', deviceId: device._id });
     } catch (err) {
@@ -97,21 +111,21 @@ const deviceRoutes = (logger, getApiLimiter, modifyApiLimiter, auth) => {
       logger.warn(`Erros de validação: ${JSON.stringify(errors.array())}`);
       return res.status(400).json({ errors: errors.array() });
     }
-  
+
     try {
       const { serial_number } = req.body;
-  
+
       const device = await Device.findOneAndUpdate(
         { serial_number },
         { last_seen: new Date() },
         { new: true }
       );
-  
+
       if (!device) {
         logger.warn(`Dispositivo não encontrado para heartbeat: ${serial_number}`);
         return res.status(404).json({ error: 'Dispositivo não encontrado' });
       }
-  
+
       logger.info(`Heartbeat recebido de: ${serial_number}`);
       res.status(200).json({ message: 'Heartbeat registrado com sucesso' });
     } catch (err) {
@@ -162,14 +176,14 @@ const deviceRoutes = (logger, getApiLimiter, modifyApiLimiter, auth) => {
       logger.warn(`Erros de validação: ${JSON.stringify(errors.array())}`);
       return res.status(400).json({ errors: errors.array() });
     }
-  
+
     try {
       const { serial_number } = req.query;
       // Adicionar filtro por setor para usuários comuns também aqui, se necessário
       const device = await Device.findOne({ serial_number });
       if (req.user.role === 'user' && device && device.sector !== req.user.sector) {
-          logger.warn(`Usuário '${req.user.username}' tentou acessar comandos para dispositivo fora do seu setor: ${serial_number}`);
-          return res.status(403).json({ error: 'Acesso negado: Dispositivo fora do seu setor de permissão.' });
+        logger.warn(`Usuário '${req.user.username}' tentou acessar comandos para dispositivo fora do seu setor: ${serial_number}`);
+        return res.status(403).json({ error: 'Acesso negado: Dispositivo fora do seu setor de permissão.' });
       }
 
       const commands = await Command.find({ serial_number, status: 'pending' }).lean();
@@ -195,7 +209,7 @@ const deviceRoutes = (logger, getApiLimiter, modifyApiLimiter, auth) => {
     body('command').notEmpty().withMessage('command é obrigatório').trim(),
   ], async (req, res) => {
     const { device_name, serial_number, command, packageName, apkUrl, maintenance_status, maintenance_ticket, maintenance_history_entry } = req.body;
-  
+
     try {
       if (!serial_number || !command) {
         logger.warn('Faltam campos obrigatórios: device_name ou command');
@@ -205,12 +219,12 @@ const deviceRoutes = (logger, getApiLimiter, modifyApiLimiter, auth) => {
       // Verificação de setor antes de executar o comando
       const device = await Device.findOne({ serial_number });
       if (!device) {
-          logger.warn(`Dispositivo não encontrado: ${serial_number}`);
-          return res.status(404).json({ error: 'Dispositivo não encontrado' });
+        logger.warn(`Dispositivo não encontrado: ${serial_number}`);
+        return res.status(404).json({ error: 'Dispositivo não encontrado' });
       }
       if (req.user.role === 'user' && device.sector !== req.user.sector) {
-          logger.warn(`Usuário '${req.user.username}' tentou executar comando em dispositivo fora do seu setor: ${serial_number}`);
-          return res.status(403).json({ error: 'Acesso negado: Dispositivo fora do seu setor de permissão.' });
+        logger.warn(`Usuário '${req.user.username}' tentou executar comando em dispositivo fora do seu setor: ${serial_number}`);
+        return res.status(403).json({ error: 'Acesso negado: Dispositivo fora do seu setor de permissão.' });
       }
 
       if (command === 'set_maintenance') {
@@ -252,10 +266,10 @@ const deviceRoutes = (logger, getApiLimiter, modifyApiLimiter, auth) => {
         logger.info(`Comando set_maintenance executado para ${serial_number}: status=${maintenance_status}`);
         return res.status(200).json({ message: `Status de manutenção atualizado para ${serial_number}` });
       } else {
-        await Command.create({ 
-          device_name, 
-          serial_number, 
-          command, 
+        await Command.create({
+          device_name,
+          serial_number,
+          command,
           parameters: { packageName, apkUrl }
         });
         logger.info(`Comando "${command}" registrado para ${serial_number}`);
@@ -304,8 +318,8 @@ const deviceRoutes = (logger, getApiLimiter, modifyApiLimiter, auth) => {
       // Verificação de setor para garantir que o usuário não manipule comandos de outros setores
       const device = await Device.findOne({ serial_number: command.serial_number });
       if (req.user.role === 'user' && device && device.sector !== req.user.sector) {
-          logger.warn(`Usuário '${req.user.username}' tentou reportar comando para dispositivo fora do seu setor: ${serial_number}`);
-          return res.status(403).json({ error: 'Acesso negado: Dispositivo fora do seu setor de permissão.' });
+        logger.warn(`Usuário '${req.user.username}' tentou reportar comando para dispositivo fora do seu setor: ${serial_number}`);
+        return res.status(403).json({ error: 'Acesso negado: Dispositivo fora do seu setor de permissão.' });
       }
 
 
@@ -325,12 +339,12 @@ const deviceRoutes = (logger, getApiLimiter, modifyApiLimiter, auth) => {
       // Verificação de setor antes de excluir
       const device = await Device.findOne({ serial_number: serial_number });
       if (!device) {
-          logger.warn(`Dispositivo não encontrado: ${serial_number}`);
-          return res.status(404).json({ error: 'Dispositivo não encontrado' });
+        logger.warn(`Dispositivo não encontrado: ${serial_number}`);
+        return res.status(404).json({ error: 'Dispositivo não encontrado' });
       }
       if (req.user.role === 'user' && device.sector !== req.user.sector) {
-          logger.warn(`Usuário '${req.user.username}' tentou excluir dispositivo fora do seu setor: ${serial_number}`);
-          return res.status(403).json({ error: 'Acesso negado: Dispositivo fora do seu setor de permissão.' });
+        logger.warn(`Usuário '${req.user.username}' tentou excluir dispositivo fora do seu setor: ${serial_number}`);
+        return res.status(403).json({ error: 'Acesso negado: Dispositivo fora do seu setor de permissão.' });
       }
 
       const deletedDevice = await Device.findOneAndDelete({ serial_number: serial_number });
@@ -339,6 +353,32 @@ const deviceRoutes = (logger, getApiLimiter, modifyApiLimiter, auth) => {
     } catch (err) {
       logger.error(`Erro ao excluir dispositivo: ${err.message}`);
       res.status(500).json({ error: 'Erro interno do servidor', details: err.message });
+    }
+  });
+
+  // Obter histórico de localização
+  router.get('/:serial_number/location-history', auth, getApiLimiter, async (req, res) => {
+    try {
+      const { serial_number } = req.params;
+
+      // Opcional: Adicionar verificação de permissão para ver este dispositivo específico
+      // if (req.user.role === 'user') { ... }
+
+      const history = await LocationHistory.find({ serial_number: serial_number })
+        .sort({ timestamp: -1 }) // Ordena do mais recente para o mais antigo
+        .limit(20) // Limita aos últimos 20 registos
+        .lean();
+
+      logger.info(`Histórico de localização solicitado para ${serial_number}: ${history.length} registos encontrados.`);
+
+      res.status(200).json({
+        success: true,
+        history
+      });
+
+    } catch (err) {
+      logger.error(`Erro ao obter histórico de localização: ${err.message}`);
+      res.status(500).json({ success: false, message: 'Erro interno do servidor' });
     }
   });
 
