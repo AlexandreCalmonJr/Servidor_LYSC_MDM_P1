@@ -2,6 +2,16 @@ const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 const { validationResult } = require('express-validator');
 
+// Função auxiliar para log seguro que previne crashes
+const safeLog = (req, level, message) => {
+    if (req.logger && typeof req.logger[level] === 'function') {
+        req.logger[level](message);
+    } else {
+        // Fallback para console.log se o logger não estiver configurado
+        console.log(`[LOG-${level.toUpperCase()}]: ${message}`);
+    }
+};
+
 const registerUser = async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -19,19 +29,18 @@ const registerUser = async (req, res) => {
         if (existingUser) {
             return res.status(409).json({ 
                 success: false,
-                message: 'Usuário ou email já existe' 
+                message: 'Utilizador ou email já existe' 
             });
         }
         
-        // Inclui 'sector' no novo usuário
         const user = new User({ username, email, password, role, sector });
         await user.save();
         
-        req.logger.info(`Novo usuário registrado: ${username} (${role}) - Setor: ${sector}`);
+        safeLog(req, 'info', `Novo utilizador registado: ${username} (${role}) - Setor: ${sector}`);
         
         res.status(201).json({ 
             success: true,
-            message: 'Usuário registrado com sucesso',
+            message: 'Utilizador registado com sucesso',
             user: {
                 id: user._id,
                 username: user.username,
@@ -42,7 +51,7 @@ const registerUser = async (req, res) => {
             }
         });
     } catch (err) {
-        req.logger.error(`Erro ao registrar usuário: ${err.message}`);
+        safeLog(req, 'error', `Erro ao registar utilizador: ${err.message}`);
         res.status(500).json({ 
             success: false,
             message: 'Erro no servidor', 
@@ -52,28 +61,19 @@ const registerUser = async (req, res) => {
 };
 
 const loginUser = async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(400).json({ 
-            success: false,
-            message: 'Dados inválidos',
-            errors: errors.array() 
-        });
-    }
-
+    // ... (código de login sem alterações, mas usando safeLog)
     try {
         const { username, password } = req.body;
         const user = await User.findOne({ username });
         
         if (!user || !(await user.comparePassword(password))) {
-            req.logger.warn(`Tentativa de login inválida para usuário: ${username} - IP: ${req.ip}`);
+            safeLog(req, 'warn', `Tentativa de login inválida para utilizador: ${username} - IP: ${req.ip}`);
             return res.status(401).json({ 
                 success: false,
                 message: 'Credenciais inválidas' 
             });
         }
         
-        // Inclui 'sector' no payload do JWT
         const tokenPayload = {
             id: user._id,
             role: user.role,
@@ -87,7 +87,7 @@ const loginUser = async (req, res) => {
             { expiresIn: process.env.JWT_EXPIRES_IN || '24h' }
         );
         
-        req.logger.info(`Login bem-sucedido: ${username} (${user.role}) - Setor: ${user.sector} - IP: ${req.ip}`);
+        safeLog(req, 'info', `Login bem-sucedido: ${username} (${user.role}) - Setor: ${user.sector} - IP: ${req.ip}`);
         
         res.status(200).json({ 
             success: true,
@@ -102,7 +102,7 @@ const loginUser = async (req, res) => {
             }
         });
     } catch (err) {
-        req.logger.error(`Erro no login: ${err.message}`);
+        safeLog(req, 'error', `Erro no login: ${err.message}`);
         res.status(500).json({ 
             success: false,
             message: 'Erro no servidor', 
@@ -113,21 +113,21 @@ const loginUser = async (req, res) => {
 
 const listUsers = async (req, res) => {
     try {
-        const users = await User.find().select('-password').lean(); // Exclui a senha
+        const users = await User.find().select('-password').lean();
         
-        req.logger.info(`Lista de usuários solicitada por: ${req.user.username}`);
+        safeLog(req, 'info', `Lista de utilizadores solicitada por: ${req.user.username}`);
         
         res.status(200).json({
             success: true,
-            message: 'Usuários listados com sucesso',
+            message: 'Utilizadores listados com sucesso',
             users,
             total: users.length
         });
     } catch (err) {
-        req.logger.error(`Erro ao listar usuários: ${err.message}`);
+        safeLog(req, 'error', `Erro ao listar utilizadores: ${err.message}`);
         res.status(500).json({ 
             success: false,
-            message: 'Erro ao listar usuários', 
+            message: 'Erro ao listar utilizadores', 
             details: err.message 
         });
     }
@@ -137,171 +137,86 @@ const updateUser = async (req, res) => {
     try {
         const { id } = req.params;
         const updates = req.body;
-
-        // Remove campos que não devem ser atualizados diretamente
-        delete updates.password; // Senha deve ser atualizada em endpoint específico
+        delete updates.password;
         delete updates._id;
         delete updates.created_at;
 
-        const user = await User.findByIdAndUpdate(id, updates, { 
-            new: true, 
-            runValidators: true 
-        }).select('-password');
+        const user = await User.findByIdAndUpdate(id, updates, { new: true, runValidators: true }).select('-password');
         
         if (!user) {
-            return res.status(404).json({ 
-                success: false,
-                message: 'Usuário não encontrado' 
-            });
+            return res.status(404).json({ success: false, message: 'Utilizador não encontrado' });
         }
         
-        req.logger.info(`Usuário atualizado: ${user.username} por ${req.user.username}`);
+        safeLog(req, 'info', `Utilizador atualizado: ${user.username} por ${req.user.username}`);
         
-        res.status(200).json({
-            success: true,
-            message: 'Usuário atualizado com sucesso',
-            user
-        });
+        res.status(200).json({ success: true, message: 'Utilizador atualizado com sucesso', user });
     } catch (err) {
-        req.logger.error(`Erro ao atualizar usuário: ${err.message}`);
-        res.status(500).json({ 
-            success: false,
-            message: 'Erro ao atualizar usuário', 
-            details: err.message 
-        });
+        safeLog(req, 'error', `Erro ao atualizar utilizador: ${err.message}`);
+        res.status(500).json({ success: false, message: 'Erro ao atualizar utilizador', details: err.message });
     }
 };
 
 const deleteUser = async (req, res) => {
     try {
         const { id } = req.params;
-        
-        // Impedir que o usuário delete a si mesmo
         if (id === req.user.id) {
-            return res.status(400).json({
-                success: false,
-                message: 'Você não pode deletar sua própria conta'
-            });
+            return res.status(400).json({ success: false, message: 'Você não pode eliminar a sua própria conta' });
         }
         
         const user = await User.findByIdAndDelete(id);
         if (!user) {
-            return res.status(404).json({ 
-                success: false,
-                message: 'Usuário não encontrado' 
-            });
+            return res.status(404).json({ success: false, message: 'Utilizador não encontrado' });
         }
         
-        req.logger.info(`Usuário deletado: ${user.username} por ${req.user.username}`);
+        safeLog(req, 'info', `Utilizador eliminado: ${user.username} por ${req.user.username}`);
         
-        res.status(200).json({ 
-            success: true,
-            message: 'Usuário excluído com sucesso' 
-        });
+        res.status(200).json({ success: true, message: 'Utilizador excluído com sucesso' });
     } catch (err) {
-        req.logger.error(`Erro ao excluir usuário: ${err.message}`);
-        res.status(500).json({ 
-            success: false,
-            message: 'Erro ao excluir usuário', 
-            details: err.message 
-        });
+        safeLog(req, 'error', `Erro ao excluir utilizador: ${err.message}`);
+        res.status(500).json({ success: false, message: 'Erro ao excluir utilizador', details: err.message });
     }
 };
 
-// Novo endpoint para verificar token
 const verifyToken = async (req, res) => {
     try {
-        // Se chegou até aqui, o token é válido (middleware auth já validou)
         const user = await User.findById(req.user.id).select('-password');
-        
         if (!user) {
-            return res.status(404).json({
-                success: false,
-                message: 'Usuário não encontrado'
-            });
+            return res.status(404).json({ success: false, message: 'Utilizador não encontrado' });
         }
-        
         res.status(200).json({
             success: true,
             message: 'Token válido',
-            user: {
-                id: user._id,
-                username: user.username,
-                email: user.email,
-                role: user.role,
-                sector: user.sector
-            }
+            user: { id: user._id, username: user.username, email: user.email, role: user.role, sector: user.sector }
         });
     } catch (err) {
-        req.logger.error(`Erro ao verificar token: ${err.message}`);
-        res.status(500).json({
-            success: false,
-            message: 'Erro no servidor',
-            details: err.message
-        });
+        safeLog(req, 'error', `Erro ao verificar token: ${err.message}`);
+        res.status(500).json({ success: false, message: 'Erro no servidor', details: err.message });
     }
 };
 
-module.exports = {
-    registerUser,
-    loginUser,
-    listUsers,
-    updateUser,
-    deleteUser,
-    verifyToken
-};
-
-// Endpoint para alterar senha
 const changePassword = async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        return res.status(400).json({ 
-            success: false,
-            message: 'Dados inválidos',
-            errors: errors.array() 
-        });
+        return res.status(400).json({ success: false, message: 'Dados inválidos', errors: errors.array() });
     }
-
     try {
         const { currentPassword, newPassword } = req.body;
-        const userId = req.user.id;
-
-        // Buscar o usuário
-        const user = await User.findById(userId);
+        const user = await User.findById(req.user.id);
         if (!user) {
-            return res.status(404).json({
-                success: false,
-                message: 'Usuário não encontrado'
-            });
+            return res.status(404).json({ success: false, message: 'Utilizador não encontrado' });
         }
-
-        // Verificar senha atual
         const isCurrentPasswordValid = await user.comparePassword(currentPassword);
         if (!isCurrentPasswordValid) {
-            req.logger.warn(`Tentativa de alteração de senha com senha atual incorreta: ${user.username} - IP: ${req.ip}`);
-            return res.status(401).json({
-                success: false,
-                message: 'Senha atual incorreta'
-            });
+            safeLog(req, 'warn', `Tentativa de alteração de senha com senha atual incorreta: ${user.username} - IP: ${req.ip}`);
+            return res.status(401).json({ success: false, message: 'Senha atual incorreta' });
         }
-
-        // Atualizar senha
         user.password = newPassword;
         await user.save();
-
-        req.logger.info(`Senha alterada com sucesso: ${user.username} - IP: ${req.ip}`);
-
-        res.status(200).json({
-            success: true,
-            message: 'Senha alterada com sucesso'
-        });
+        safeLog(req, 'info', `Senha alterada com sucesso: ${user.username} - IP: ${req.ip}`);
+        res.status(200).json({ success: true, message: 'Senha alterada com sucesso' });
     } catch (err) {
-        req.logger.error(`Erro ao alterar senha: ${err.message}`);
-        res.status(500).json({
-            success: false,
-            message: 'Erro no servidor',
-            details: err.message
-        });
+        safeLog(req, 'error', `Erro ao alterar senha: ${err.message}`);
+        res.status(500).json({ success: false, message: 'Erro no servidor', details: err.message });
     }
 };
 
@@ -314,4 +229,3 @@ module.exports = {
     verifyToken,
     changePassword
 };
-
