@@ -69,6 +69,10 @@ const deviceRoutes = (logger, getApiLimiter, modifyApiLimiter, auth) => {
         wifi_broadcast: data.wifi_broadcast || 'N/A',
         wifi_submask: data.wifi_submask || 'N/A',
         last_seen: data.last_seen || new Date().toISOString(),
+        // Removidos os campos de manutenção daqui para evitar a sobreposição de dados.
+        // maintenance_status: data.maintenance_status,
+        // maintenance_ticket: data.maintenance_ticket,
+        // maintenance_reason: data.maintenance_reason,
       };
       logger.info(`Dados do dispositivo processados: ${JSON.stringify(deviceData)}`);
 
