@@ -22,6 +22,7 @@ const DeviceSchema = new mongoose.Schema({
   last_seen: { type: String, trim: false },
   maintenance_status: { type: Boolean, default: false },
   maintenance_ticket: { type: String, default: '' },
+  maintenance_reason: { type: String, default: '' },
   maintenance_history: [{
     timestamp: { type: Date, required: true },
     status: { type: String, required: true },

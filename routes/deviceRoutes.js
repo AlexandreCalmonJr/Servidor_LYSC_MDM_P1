@@ -46,12 +46,9 @@ const deviceRoutes = (logger, getApiLimiter, modifyApiLimiter, auth) => {
       let data = req.body;
       logger.info(`Dados recebidos de ${req.ip}: ${JSON.stringify(data)}`);
 
-
-      const newLocation = await mapMacAddressRadioToLocation(data.mac_address_radio || 'N/A');
-
-
-
+      // Apenas uma chamada para a função de mapeamento
       const location = await mapMacAddressRadioToLocation(data.mac_address_radio || 'N/A');
+
       const deviceData = {
         device_name: data.device_name || 'unknown',
         device_model: data.device_model || 'N/A',
@@ -82,8 +79,8 @@ const deviceRoutes = (logger, getApiLimiter, modifyApiLimiter, auth) => {
         const historyEntry = new LocationHistory({
           serial_number: deviceData.serial_number,
           bssid: deviceData.mac_address_radio,
-          sector: newLocation.sector,
-          floor: newLocation.floor,
+          sector: location.sector,
+          floor: location.floor,
           timestamp: new Date(deviceData.last_seen)
         });
         await historyEntry.save();
@@ -147,7 +144,7 @@ const deviceRoutes = (logger, getApiLimiter, modifyApiLimiter, auth) => {
       // Buscar TODOS os dispositivos primeiro
       const allDevices = await Device.find({}).lean();
       let filteredDevices = allDevices;
-  
+
       // Se o usuário não for admin, filtrar por nome do dispositivo
       if (req.user.role === 'user') {
         const userSector = req.user.sector;
@@ -169,7 +166,7 @@ const deviceRoutes = (logger, getApiLimiter, modifyApiLimiter, auth) => {
       } else {
         logger.info(`Usuário '${req.user.username}' (role: ${req.user.role}) solicitando TODOS os dispositivos.`);
       }
-  
+
       // Aplicar mapIpToUnit apenas nos dispositivos filtrados
       const devicesWithUnit = await Promise.all(filteredDevices.map(async (device) => {
         const unit = await mapIpToUnit(device.ip_address);
@@ -225,7 +222,7 @@ const deviceRoutes = (logger, getApiLimiter, modifyApiLimiter, auth) => {
     body('serial_number').notEmpty().withMessage('serial_number é obrigatório').trim(),
     body('command').notEmpty().withMessage('command é obrigatório').trim(),
   ], async (req, res) => {
-    const { device_name, serial_number, command, packageName, apkUrl, maintenance_status, maintenance_ticket, maintenance_history_entry } = req.body;
+    const { device_name, serial_number, command, packageName, apkUrl, maintenance_status, maintenance_ticket, maintenance_history_entry, maintenance_reason } = req.body;
 
     try {
       if (!serial_number || !command) {
@@ -253,6 +250,7 @@ const deviceRoutes = (logger, getApiLimiter, modifyApiLimiter, auth) => {
         const updateFields = {
           maintenance_status,
           maintenance_ticket: maintenance_ticket || '',
+          maintenance_reason: maintenance_reason || '',
         };
 
         if (maintenance_history_entry) {

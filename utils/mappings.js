@@ -2,17 +2,37 @@ const BssidMapping = require('../models/BssidMapping');
 const UnitMapping = require('../models/UnitMapping');
 const { ipToInt } = require('./helpers');
 
+// Função auxiliar para extrair o prefixo (os primeiros 5 octetos) de um MAC
+function getMacPrefix(mac_address) {
+  if (!mac_address || mac_address.length < 14) return null; // Apenas para garantia
+  // Exemplo: '00:1A:2B:3C:4D:EF' -> '00:1A:2B:3C:4D'
+  return mac_address.slice(0, 14);
+}
+
 // Função para mapear BSSID para setor e andar
 async function mapMacAddressRadioToLocation(mac_address_radio) {
   if (!mac_address_radio || mac_address_radio === 'N/A') {
-    // Use a logger passed from the caller if needed
     return { sector: 'Desconhecido', floor: 'Desconhecido' };
   }
-  const mapping = await BssidMapping.findOne({ mac_address_radio: mac_address_radio });
-  if (!mapping) {
-    return { sector: 'Desconhecido', floor: 'Desconhecido' };
+
+  // Tenta primeiro uma correspondência exata para maior precisão
+  const exactMapping = await BssidMapping.findOne({ mac_address_radio: mac_address_radio });
+  if (exactMapping) {
+    return { sector: exactMapping.sector, floor: exactMapping.floor };
   }
-  return { sector: mapping.sector, floor: mapping.floor };
+  
+  // Se a correspondência exata falhar, tenta usar o prefixo
+  const macPrefix = getMacPrefix(mac_address_radio);
+  if (macPrefix) {
+    // A regex busca por BSSIDs que começam com o mesmo prefixo
+    const prefixMapping = await BssidMapping.findOne({ mac_address_radio: { $regex: `^${macPrefix}` } });
+    if (prefixMapping) {
+      return { sector: prefixMapping.sector, floor: prefixMapping.floor };
+    }
+  }
+
+  // Se nada for encontrado, retorna desconhecido
+  return { sector: 'Desconhecido', floor: 'Desconhecido' };
 }
 
 async function mapIpToUnit(ip_address) {
