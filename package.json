@@ -21,6 +21,7 @@
     "express-validator": "^7.2.1",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.17.2",
+    "node-cron": "^4.2.1",
     "os": "^0.1.2",
     "winston": "^3.17.0"
   }
