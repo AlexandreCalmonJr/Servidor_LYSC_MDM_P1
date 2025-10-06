@@ -1,77 +1,63 @@
-const mongoose = require('mongoose');
-const path = require('path');
 const Device = require('../models/Device');
 
-// Garante que o arquivo .env seja encontrado corretamente
-const envPath = path.resolve(__dirname, '../.env');
-require('dotenv').config({ path: envPath });
+// Define os limites de tempo
+const OFFLINE_THRESHOLD_MINUTES = 60;
+const UNMONITORED_THRESHOLD_DAYS = 5;
 
-const dbURI = process.env.MONGO_URI;
-
-if (!dbURI) {
-  console.error('Erro: A variável de ambiente MONGO_URI não foi definida. Verifique seu arquivo .env.');
-  process.exit(1);
-}
-
-mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => {
-    console.log('Conectado ao banco de dados, iniciando a correção dos status...');
-    return fixDeviceStatus();
-  })
-  .catch(err => {
-    console.error('Erro ao conectar ao banco de dados:', err);
-    process.exit(1);
-  });
-
-const fixDeviceStatus = async () => {
+/**
+ * Atualiza o status dos dispositivos com base na inatividade.
+ * @param {object} logger - A instância do logger (winston).
+ */
+const updateDeviceStatus = async (logger) => {
   try {
-    const allDevices = await Device.find({});
-    const now = new Date();
-    let correctedCount = 0;
-
-    const fortyFiveMinutesAgo = new Date(Date.now() - 45 * 60 * 1000);
-    const fiveDaysAgo = new Date(Date.now() - 5 * 24 * 60 * 60 * 1000);
-
-    for (const device of allDevices) {
-      let originalStatus = device.status;
-      let newStatus = originalStatus;
-      let newIsOnline = device.is_online;
-
-      if (device.maintenance_status) {
-        // Ignora dispositivos em manutenção
-        continue;
+    // --- ETAPA 1: Marcar dispositivos 'online' como 'offline' ---
+    const offlineThreshold = new Date(Date.now() - OFFLINE_THRESHOLD_MINUTES * 60 * 1000);
+    
+    const offlineResult = await Device.updateMany(
+      {
+        last_seen: { $lt: offlineThreshold },
+        status: 'online', // Apenas muda quem está 'online'
+        maintenance_status: { $ne: true } // Ignora quem está em manutenção
+      },
+      { 
+        $set: { 
+          status: 'offline',
+          is_online: false
+        } 
       }
-      
-      const lastSeen = device.last_seen ? new Date(device.last_seen) : new Date(0);
-      const lastSync = device.last_sync ? new Date(device.last_sync) : new Date(0);
+    );
 
-      // Lógica de correção baseada no tempo
-      if (lastSeen > fortyFiveMinutesAgo) {
-        newStatus = 'online';
-        newIsOnline = true;
-      } else if (lastSync < fiveDaysAgo) {
-        newStatus = 'Sem Monitorar';
-        newIsOnline = false;
-      } else {
-        newStatus = 'offline';
-        newIsOnline = false;
-      }
-
-      if (newStatus !== originalStatus) {
-        device.status = newStatus;
-        device.is_online = newIsOnline;
-        await device.save();
-        correctedCount++;
-        console.log(`Dispositivo "${device.device_name}" corrigido de "${originalStatus}" para "${newStatus}".`);
-      }
+    if (offlineResult.modifiedCount > 0) {
+      logger.info(`${offlineResult.modifiedCount} dispositivos foram marcados como 'offline'.`);
     }
 
-    console.log(`Correção concluída. ${correctedCount} de ${allDevices.length} dispositivos tiveram seus status ajustados.`);
+    // --- ETAPA 2: Marcar dispositivos 'offline' como 'Sem Monitorar' ---
+    const unmonitoredThreshold = new Date(Date.now() - UNMONITORED_THRESHOLD_DAYS * 24 * 60 * 60 * 1000);
+
+    const unmonitoredResult = await Device.updateMany(
+      {
+        last_seen: { $lt: unmonitoredThreshold },
+        status: 'offline', // Apenas muda quem já está 'offline'
+        maintenance_status: { $ne: true }
+      },
+      { 
+        $set: { 
+          status: 'Sem Monitorar'
+        } 
+      }
+    );
+
+    if (unmonitoredResult.modifiedCount > 0) {
+      logger.info(`${unmonitoredResult.modifiedCount} dispositivos foram marcados como 'Sem Monitorar'.`);
+    }
+
+    if (offlineResult.modifiedCount === 0 && unmonitoredResult.modifiedCount === 0) {
+      logger.info('Nenhum dispositivo precisou de atualização de status nesta execução.');
+    }
 
   } catch (error) {
-    console.error('Erro durante a correção do status dos dispositivos:', error);
-  } finally {
-    mongoose.connection.close();
-    console.log('Conexão com o banco de dados fechada.');
+    logger.error('Erro durante a tarefa de atualização de status dos dispositivos:', { message: error.message });
   }
 };
+
+module.exports = updateDeviceStatus;

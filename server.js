@@ -3,7 +3,10 @@ const mongoose = require('mongoose');
 const winston = require('winston');
 require('dotenv').config();
 const cron = require('node-cron');
-const Device = require('./models/Device');
+const path = require('path');
+
+// Lógica de atualização de status agora está em um arquivo separado
+const updateDeviceStatus = require('./scripts/updateDeviceStatus');
 
 const expressConfig = require('./config/express');
 const connectDB = require('./config/db');
@@ -34,66 +37,15 @@ const ip = '0.0.0.0';
 // Conectar ao banco de dados
 connectDB(logger);
 
-// Configurar o Express
+// Configurar o Express e as rotas
 expressConfig(app, logger);
 
-cron.schedule('*/15 * * * *', async () => {
-  logger.info('Executando verificação de dispositivos offline...');
-  try {
-    // A janela de tempo foi aumentada para 60 minutos, maior que o heartbeat de 40 min.
-    const fortyFiveMinutesAgo = new Date(Date.now() - 60 * 60 * 1000);
-
-    // Encontra dispositivos online que não dão sinal há mais de 45 minutos
-    const result = await Device.updateMany(
-      {
-        last_seen: { $lt: fortyFiveMinutesAgo },
-        is_online: true,
-        maintenance_status: false // Ignora dispositivos em manutenção
-      },
-      {
-        $set: {
-          status: 'offline',
-          is_online: false
-        }
-      }
-    );
-
-    if (result.nModified > 0) {
-      logger.info(`${result.nModified} dispositivos foram marcados como offline.`);
-    }
-  } catch (error) {
-    logger.error('Erro na tarefa de verificação de offline:', error);
-  }
+// Tarefa agendada para rodar a cada 5 minutos
+cron.schedule('*/5 * * * *', () => {
+  logger.info('Executando tarefa agendada para verificação de status dos dispositivos.');
+  // Chama a função importada, que contém toda a lógica
+  updateDeviceStatus(logger);
 });
-
-// TAREFA 2: Verifica uma vez por dia (às 02:00) os dispositivos sem monitoramento.
-cron.schedule('0 2 * * *', async () => {
-  logger.info('Executando verificação diária de dispositivos sem monitoramento...');
-  try {
-    const fiveDaysAgo = new Date(Date.now() - 5 * 24 * 60 * 60 * 1000);
-
-    const result = await Device.updateMany(
-      {
-        last_sync: { $lt: fiveDaysAgo },
-        status: { $ne: 'Sem Monitorar' },
-        maintenance_status: false
-      },
-      {
-        $set: {
-          status: 'Sem Monitorar',
-          is_online: false
-        }
-      }
-    );
-
-    if (result.nModified > 0) {
-      logger.info(`${result.nModified} dispositivos foram marcados como "Sem Monitorar".`);
-    }
-  } catch (error) {
-    logger.error('Erro na tarefa de verificação de "Sem Monitorar":', error);
-  }
-});
-
 
 // Iniciar servidor
 app.listen(port, ip, () => {

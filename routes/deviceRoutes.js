@@ -69,10 +69,6 @@ const deviceRoutes = (logger, getApiLimiter, modifyApiLimiter, auth) => {
         wifi_broadcast: data.wifi_broadcast || 'N/A',
         wifi_submask: data.wifi_submask || 'N/A',
         last_seen: data.last_seen || new Date().toISOString(),
-        // Removidos os campos de manutenção daqui para evitar a sobreposição de dados.
-        // maintenance_status: data.maintenance_status,
-        // maintenance_ticket: data.maintenance_ticket,
-        // maintenance_reason: data.maintenance_reason,
       };
       logger.info(`Dados do dispositivo processados: ${JSON.stringify(deviceData)}`);
 
@@ -142,48 +138,92 @@ const deviceRoutes = (logger, getApiLimiter, modifyApiLimiter, auth) => {
     }
   });
 
-  // Listar dispositivos com filtragem por setor para usuários comuns
+  // Listar dispositivos com PAGINAÇÃO e BUSCA
   router.get('/', auth, getApiLimiter, async (req, res) => {
     try {
-      // Buscar TODOS os dispositivos primeiro
-      const allDevices = await Device.find({}).lean();
-      let filteredDevices = allDevices;
+      const { page = 1, limit = 15, search = '' } = req.query;
+      const pageNum = parseInt(page, 10);
+      const limitNum = parseInt(limit, 10);
 
-      // Se o usuário não for admin, filtrar por nome do dispositivo
+      // Construir query de busca
+      let searchQuery = {};
+      if (search) {
+        const searchRegex = new RegExp(search, 'i');
+        searchQuery = {
+          $or: [
+            { device_name: searchRegex },
+            { serial_number: searchRegex },
+            { imei: searchRegex },
+            { sector: searchRegex },
+            { floor: searchRegex },
+            { device_model: searchRegex },
+            { ip_address: searchRegex }
+          ]
+        };
+      }
+
+      // Filtrar por setor se o usuário não for admin
+      let finalQuery = searchQuery;
       if (req.user.role === 'user') {
         const userSector = req.user.sector;
         if (userSector && userSector !== 'Global') {
+          // Buscar primeiro todos os dispositivos que correspondem à pesquisa
+          const allMatchingDevices = await Device.find(searchQuery).lean();
+          
           // Separar os prefixos por vírgula e limpar espaços
           const prefixes = userSector.split(',').map(p => p.trim().toLowerCase());
           
           // Filtrar dispositivos cujo nome começa com algum dos prefixos
-          filteredDevices = allDevices.filter(device => {
+          const filteredDevices = allMatchingDevices.filter(device => {
             const deviceName = (device.device_name || '').toLowerCase();
             return prefixes.some(prefix => deviceName.startsWith(prefix));
           });
           
-          logger.info(`Usuário '${req.user.username}' (prefixos: ${prefixes.join(', ')}) - ${filteredDevices.length} dispositivos filtrados de ${allDevices.length} totais.`);
+          // Extrair os IDs dos dispositivos filtrados
+          const filteredIds = filteredDevices.map(d => d._id);
+          
+          // Criar query final usando os IDs
+          finalQuery = { _id: { $in: filteredIds } };
+          
+          logger.info(`Usuário '${req.user.username}' (prefixos: ${prefixes.join(', ')}) - busca com filtro de setor`);
         } else {
           logger.warn(`Usuário '${req.user.username}' com role 'user' mas sem setor definido ou setor 'Global'.`);
           return res.status(403).json({ error: 'Acesso negado: Setor do usuário não definido ou inválido para esta operação.' });
         }
       } else {
-        logger.info(`Usuário '${req.user.username}' (role: ${req.user.role}) solicitando TODOS os dispositivos.`);
+        logger.info(`Usuário '${req.user.username}' (role: ${req.user.role}) solicitando dispositivos com busca.`);
       }
 
-      // Aplicar mapIpToUnit apenas nos dispositivos filtrados
-      const devicesWithUnit = await Promise.all(filteredDevices.map(async (device) => {
+      // Contar total de documentos para paginação
+      const totalDevices = await Device.countDocuments(finalQuery);
+      const totalPages = Math.ceil(totalDevices / limitNum);
+
+      // Buscar dispositivos com paginação
+      const devices = await Device.find(finalQuery)
+        .limit(limitNum)
+        .skip((pageNum - 1) * limitNum)
+        .sort({ device_name: 1 })
+        .lean();
+
+      // Aplicar mapIpToUnit aos dispositivos retornados
+      const devicesWithUnit = await Promise.all(devices.map(async (device) => {
         const unit = await mapIpToUnit(device.ip_address);
         return { ...device, unit };
       }));
       
-      logger.info(`Lista de dispositivos retornada: ${devicesWithUnit.length} dispositivos (Role: ${req.user.role}, Setor: ${req.user.sector || 'N/A'})`);
-      res.status(200).json(devicesWithUnit);
+      logger.info(`Lista de dispositivos retornada: ${devicesWithUnit.length} de ${totalDevices} total (Página ${pageNum}/${totalPages})`);
+      
+      res.status(200).json({
+        devices: devicesWithUnit,
+        totalPages,
+        currentPage: pageNum,
+        totalDevices
+      });
     } catch (err) {
       logger.error(`Erro ao obter dispositivos: ${err.message}`);
       res.status(500).json({ error: 'Erro interno do servidor' });
     }
-  });;
+  });
 
   // Obter comandos pendentes
   router.get('/commands', auth, getApiLimiter, [
@@ -277,7 +317,7 @@ const deviceRoutes = (logger, getApiLimiter, modifyApiLimiter, auth) => {
           { new: true }
         );
 
-        if (!updatedDevice) { // Dupla checagem, embora já verificada acima
+        if (!updatedDevice) {
           logger.warn(`Dispositivo não encontrado: ${serial_number}`);
           return res.status(404).json({ error: 'Dispositivo não encontrado' });
         }
@@ -341,7 +381,6 @@ const deviceRoutes = (logger, getApiLimiter, modifyApiLimiter, auth) => {
         return res.status(403).json({ error: 'Acesso negado: Dispositivo fora do seu setor de permissão.' });
       }
 
-
       logger.info(`Resultado do comando recebido: ${command.command} para ${serial_number} - ${success ? 'sucesso' : 'falha'}`);
       res.status(200).json({ message: 'Resultado do comando registrado' });
 
@@ -380,12 +419,9 @@ const deviceRoutes = (logger, getApiLimiter, modifyApiLimiter, auth) => {
     try {
       const { serial_number } = req.params;
 
-      // Opcional: Adicionar verificação de permissão para ver este dispositivo específico
-      // if (req.user.role === 'user') { ... }
-
       const history = await LocationHistory.find({ serial_number: serial_number })
-        .sort({ timestamp: -1 }) // Ordena do mais recente para o mais antigo
-        .limit(20) // Limita aos últimos 20 registos
+        .sort({ timestamp: -1 })
+        .limit(20)
         .lean();
 
       logger.info(`Histórico de localização solicitado para ${serial_number}: ${history.length} registos encontrados.`);
