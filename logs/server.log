@@ -1436,3 +1436,51 @@
 {"level":"info","message":"📊 Dashboard disponível em: http://10.71.1.209:3000/dashboard","timestamp":"2025-08-23T15:17:09.143Z"}
 {"level":"info","message":"Conectado ao MongoDB","timestamp":"2025-08-23T15:17:09.157Z"}
 {"level":"info","message":"Listando 1 APKs disponíveis via publicRoutes","timestamp":"2025-08-23T15:17:11.239Z"}
+{"level":"info","message":"🚀 MDM Server rodando em http://10.71.1.209:3000","timestamp":"2025-10-07T11:48:25.426Z"}
+{"level":"info","message":"📱 Provisionamento disponível em: http://10.71.1.209:3000/provision/{token}","timestamp":"2025-10-07T11:48:25.436Z"}
+{"level":"info","message":"📊 Dashboard disponível em: http://10.71.1.209:3000/dashboard","timestamp":"2025-10-07T11:48:25.443Z"}
+{"level":"info","message":"Conectado ao MongoDB","timestamp":"2025-10-07T11:48:25.466Z"}
+{"level":"info","message":"Executando tarefa agendada para verificação de status dos dispositivos.","timestamp":"2025-10-07T11:50:00.028Z"}
+{"level":"info","message":"Nenhum dispositivo precisou de atualização de status nesta execução.","timestamp":"2025-10-07T11:50:00.038Z"}
+{"level":"info","message":"Executando tarefa agendada para verificação de status dos dispositivos.","timestamp":"2025-10-07T11:55:00.028Z"}
+{"level":"info","message":"Nenhum dispositivo precisou de atualização de status nesta execução.","timestamp":"2025-10-07T11:55:00.032Z"}
+{"level":"info","message":"Executando tarefa agendada para verificação de status dos dispositivos.","timestamp":"2025-10-07T12:00:00.033Z"}
+{"level":"info","message":"Nenhum dispositivo precisou de atualização de status nesta execução.","timestamp":"2025-10-07T12:00:00.037Z"}
+{"level":"info","message":"Executando tarefa agendada para verificação de status dos dispositivos.","timestamp":"2025-10-07T12:05:00.028Z"}
+{"level":"info","message":"Nenhum dispositivo precisou de atualização de status nesta execução.","timestamp":"2025-10-07T12:05:00.033Z"}
+{"level":"info","message":"Executando tarefa agendada para verificação de status dos dispositivos.","timestamp":"2025-10-07T12:10:00.020Z"}
+{"level":"info","message":"Nenhum dispositivo precisou de atualização de status nesta execução.","timestamp":"2025-10-07T12:10:00.023Z"}
+{"level":"info","message":"Executando tarefa agendada para verificação de status dos dispositivos.","timestamp":"2025-10-07T12:15:00.031Z"}
+{"level":"info","message":"Nenhum dispositivo precisou de atualização de status nesta execução.","timestamp":"2025-10-07T12:15:00.034Z"}
+{"level":"info","message":"Executando tarefa agendada para verificação de status dos dispositivos.","timestamp":"2025-10-07T12:20:00.029Z"}
+{"level":"info","message":"Nenhum dispositivo precisou de atualização de status nesta execução.","timestamp":"2025-10-07T12:20:00.034Z"}
+{"level":"info","message":"🚀 MDM Server rodando em http://10.71.1.209:3000","timestamp":"2025-10-07T12:21:47.154Z"}
+{"level":"info","message":"📱 Provisionamento disponível em: http://10.71.1.209:3000/provision/{token}","timestamp":"2025-10-07T12:21:47.161Z"}
+{"level":"info","message":"📊 Dashboard disponível em: http://10.71.1.209:3000/dashboard","timestamp":"2025-10-07T12:21:47.168Z"}
+{"level":"info","message":"Conectado ao MongoDB","timestamp":"2025-10-07T12:21:47.178Z"}
+{"level":"info","message":"Executando tarefa agendada para verificação de status dos dispositivos.","timestamp":"2025-10-07T12:25:00.030Z"}
+{"level":"info","message":"Nenhum dispositivo precisou de atualização de status nesta execução.","timestamp":"2025-10-07T12:25:00.037Z"}
+{"level":"info","message":"Requisição recebida: GET /flutter_bootstrap.js from 10.1.17.33","timestamp":"2025-10-07T12:27:37.482Z"}
+{"level":"info","message":"Requisição recebida: GET /favicon.png from 10.1.17.33","timestamp":"2025-10-07T12:27:37.552Z"}
+{"level":"info","message":"Requisição recebida: GET /flutter_bootstrap.js from 10.1.17.33","timestamp":"2025-10-07T12:27:41.801Z"}
+{"level":"info","message":"Requisição recebida: GET /manifest.json from 10.1.17.33","timestamp":"2025-10-07T12:27:46.710Z"}
+{"level":"info","message":"🚀 MDM Server rodando em http://10.71.1.209:3000","timestamp":"2025-10-07T12:34:08.638Z"}
+{"level":"info","message":"📱 Provisionamento disponível em: http://10.71.1.209:3000/provision/{token}","timestamp":"2025-10-07T12:34:08.647Z"}
+{"level":"info","message":"📊 Dashboard disponível em: http://10.71.1.209:3000/dashboard","timestamp":"2025-10-07T12:34:08.652Z"}
+{"level":"info","message":"Conectado ao MongoDB","timestamp":"2025-10-07T12:34:08.665Z"}
+{"level":"info","message":"Executando tarefa agendada para verificação de status dos dispositivos.","timestamp":"2025-10-07T12:35:00.025Z"}
+{"level":"info","message":"Nenhum dispositivo precisou de atualização de status nesta execução.","timestamp":"2025-10-07T12:35:00.033Z"}
+{"level":"info","message":"Requisição recebida: POST /api/auth/login from 10.1.17.33","timestamp":"2025-10-07T12:35:05.338Z"}
+{"level":"warn","message":"Tentativa de login inválida para utilizador: admin - IP: 10.1.17.33","timestamp":"2025-10-07T12:35:05.351Z"}
+{"level":"info","message":"Requisição recebida: POST /api/auth/login from 10.1.17.33","timestamp":"2025-10-07T12:36:10.262Z"}
+{"level":"info","message":"Login bem-sucedido: admin1 (admin) - Setor: Global - IP: 10.1.17.33","timestamp":"2025-10-07T12:36:10.333Z"}
+{"level":"info","message":"Requisição recebida: GET /api/units from 10.1.17.33","timestamp":"2025-10-07T12:36:11.657Z"}
+{"level":"info","message":"Autenticação bem-sucedida (JWT) para usuário: admin1, Setor: Global","timestamp":"2025-10-07T12:36:11.659Z"}
+{"level":"info","message":"Lista de unidades solicitada por admin1: 0 unidades","timestamp":"2025-10-07T12:36:11.664Z"}
+{"level":"info","message":"Requisição recebida: GET /api/bssid-mappings from 10.1.17.33","timestamp":"2025-10-07T12:36:11.803Z"}
+{"level":"info","message":"Autenticação bem-sucedida (JWT) para usuário: admin1, Setor: Global","timestamp":"2025-10-07T12:36:11.805Z"}
+{"level":"info","message":"Lista de mapeamentos de BSSID retornada: 0 mapeamentos","timestamp":"2025-10-07T12:36:11.809Z"}
+{"level":"info","message":"Requisição recebida: GET /api/devices from 10.1.17.33","timestamp":"2025-10-07T12:36:11.932Z"}
+{"level":"info","message":"Autenticação bem-sucedida (JWT) para usuário: admin1, Setor: Global","timestamp":"2025-10-07T12:36:11.933Z"}
+{"level":"info","message":"Usuário 'admin1' (role: admin) solicitando dispositivos com busca.","timestamp":"2025-10-07T12:36:11.934Z"}
+{"level":"info","message":"Lista de dispositivos retornada: 2 de 2 total (Página 1/1)","timestamp":"2025-10-07T12:36:11.967Z"}

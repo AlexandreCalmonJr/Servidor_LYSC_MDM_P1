@@ -24,13 +24,8 @@ const expressConfig = (app, logger) => {
   app.use(compression());
 
   // Middleware CORS
-  app.use(cors({
-    origin: process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : ['http://localhost:3000'],
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    preflightContinue: false,
-    optionsSuccessStatus: 200,
-  }));
+// Middleware CORS
+  app.use(cors());
 
   // Middleware para parsing de JSON
   app.use(express.json());
