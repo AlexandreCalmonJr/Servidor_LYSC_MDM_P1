@@ -6,7 +6,7 @@ const bssidRoutes = (logger, getApiLimiter, modifyApiLimiter, auth) => {
   const router = express.Router();
 
   // Criar mapeamento de BSSID
-  router.post('/', auth, modifyApiLimiter,  [
+  router.post('/', auth, modifyApiLimiter, [
     body('mac_address_radio')
       .notEmpty()
       .matches(/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/)
@@ -34,12 +34,19 @@ const bssidRoutes = (logger, getApiLimiter, modifyApiLimiter, auth) => {
     }
   });
 
-  // Listar mapeamentos de BSSID
+  // Listar mapeamentos de BSSID (com tratamento reforçado de nulls)
   router.get('/', auth, getApiLimiter, async (req, res) => {
     try {
       const mappings = await BssidMapping.find().lean();
-      logger.info(`Lista de mapeamentos de BSSID retornada: ${mappings.length} mapeamentos`);
-      res.status(200).json(mappings);
+      // Garantir que todos os campos sejam strings, mesmo se null ou undefined
+      const safeMappings = mappings.map(mapping => ({
+        _id: mapping._id,
+        mac_address_radio: mapping.mac_address_radio || '00:00:00:00:00:00',
+        sector: mapping.sector || 'Desconhecido',
+        floor: mapping.floor || 'Desconhecido'
+      }));
+      logger.info(`JSON retornado para /api/bssid-mappings: ${JSON.stringify(safeMappings)}`);
+      res.status(200).json(safeMappings);
     } catch (err) {
       logger.error(`Erro ao obter mapeamentos de BSSID: ${err.message}`);
       res.status(500).json({ error: 'Erro interno do servidor' });

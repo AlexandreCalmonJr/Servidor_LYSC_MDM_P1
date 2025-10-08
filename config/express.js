@@ -7,7 +7,7 @@ const { modifyApiLimiter, getApiLimiter, enrollLimiter } = require('../middlewar
 const auth = require('../middleware/auth');
 const authorize = require('../middleware/role');
 const requestLogger = require('../middleware/logging');
-const errorHandler = require('../middleware/error'); // CORRECTED: Removed the extra ' = require'
+const errorHandler = require('../middleware/error');
 
 // Import the route modules
 const deviceRoutes = require('../routes/deviceRoutes');
@@ -24,21 +24,19 @@ const expressConfig = (app, logger) => {
   app.use(compression());
 
   // Middleware CORS
-// Middleware CORS
   app.use(cors());
 
   // Middleware para parsing de JSON
   app.use(express.json());
 
-  // Configurar EJS e arquivos estáticos
+  // Configurar EJS
   app.set('view engine', 'ejs');
   app.set('views', path.join(__dirname, '..', 'views'));
-  app.use(publicRoutes(logger, getApiLimiter));
 
   // MUITO IMPORTANTE: SIRVA ARQUIVOS ESTÁTICOS PRIMEIRO
-  app.use('/public', express.static(path.join(__dirname, '..', 'public')));
+  app.use(express.static(path.join(__dirname, '..', 'public'))); // Move para o início
 
-  // Middleware de log de requisições (após o static, para não logar arquivos estáticos)
+  // Middleware de log de requisições (após o static)
   app.use(requestLogger(logger));
 
   // As rotas de autenticação NÃO USAM o middleware de auth
@@ -51,7 +49,10 @@ const expressConfig = (app, logger) => {
   app.use('/api/units', unitRoutes(logger, getApiLimiter, modifyApiLimiter, auth));
   app.use('/api/bssid-mappings', bssidRoutes(logger, getApiLimiter, modifyApiLimiter, auth));
   app.use('/api/server', serverRoutes(logger, getApiLimiter, auth));
-  
+
+  // Rota catch-all para arquivos estáticos ou index.html (após APIs)
+  app.use('/', publicRoutes(logger, getApiLimiter));
+
   // Rotas de visualização (se você tiver páginas EJS renderizadas pelo servidor)
   app.get('/dashboard', auth, authorize('admin'), require('../routes/serverRoutes').renderDashboard(logger));
   app.get('/provision/:token', require('../routes/provisioningRoutes').renderProvisioningPage(logger));
@@ -60,7 +61,7 @@ const expressConfig = (app, logger) => {
   });
 
   // Middleware global de tratamento de erros (sempre por último)
-  app.use(errorHandler(logger)); // CORRECTED: Call errorHandler with logger
+  app.use(errorHandler(logger));
 };
 
 module.exports = expressConfig;
