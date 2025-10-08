@@ -33,8 +33,11 @@ const expressConfig = (app, logger) => {
   app.set('view engine', 'ejs');
   app.set('views', path.join(__dirname, '..', 'views'));
 
-  // MUITO IMPORTANTE: SIRVA ARQUIVOS ESTÁTICOS PRIMEIRO
-  app.use(express.static(path.join(__dirname, '..', 'public'))); // Move para o início
+  // Servir arquivos estáticos da subpasta 'web' para a aplicação Flutter Web
+  app.use(express.static(path.join(__dirname, '..', 'public', 'web')));
+
+  // Servir APKs e outros arquivos estáticos da raiz 'public' (exceto web)
+  app.use('/public', express.static(path.join(__dirname, '..', 'public')));
 
   // Middleware de log de requisições (após o static)
   app.use(requestLogger(logger));
@@ -50,15 +53,14 @@ const expressConfig = (app, logger) => {
   app.use('/api/bssid-mappings', bssidRoutes(logger, getApiLimiter, modifyApiLimiter, auth));
   app.use('/api/server', serverRoutes(logger, getApiLimiter, auth));
 
-  // Rota catch-all para arquivos estáticos ou index.html (após APIs)
-  app.use('/', publicRoutes(logger, getApiLimiter));
+  // Rota catch-all para a aplicação Flutter Web (servir index.html da subpasta web)
+  app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'public', 'web', 'index.html'));
+  });
 
   // Rotas de visualização (se você tiver páginas EJS renderizadas pelo servidor)
   app.get('/dashboard', auth, authorize('admin'), require('../routes/serverRoutes').renderDashboard(logger));
   app.get('/provision/:token', require('../routes/provisioningRoutes').renderProvisioningPage(logger));
-  app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));
-  });
 
   // Middleware global de tratamento de erros (sempre por último)
   app.use(errorHandler(logger));

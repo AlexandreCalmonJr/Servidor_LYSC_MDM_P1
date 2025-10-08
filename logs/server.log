@@ -1,0 +1,4 @@
+{"level":"info","message":"🚀 MDM Server rodando em http://192.168.56.1:3000","timestamp":"2025-10-08T03:07:05.956Z"}
+{"level":"info","message":"📱 Provisionamento disponível em: http://192.168.56.1:3000/provision/{token}","timestamp":"2025-10-08T03:07:05.963Z"}
+{"level":"info","message":"📊 Dashboard disponível em: http://192.168.56.1:3000/dashboard","timestamp":"2025-10-08T03:07:05.970Z"}
+{"level":"info","message":"Conectado ao MongoDB","timestamp":"2025-10-08T03:07:05.992Z"}
