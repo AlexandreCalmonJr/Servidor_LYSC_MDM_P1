@@ -2,3 +2,51 @@
 {"level":"info","message":"📱 Provisionamento disponível em: http://192.168.56.1:3000/provision/{token}","timestamp":"2025-10-08T03:07:05.963Z"}
 {"level":"info","message":"📊 Dashboard disponível em: http://192.168.56.1:3000/dashboard","timestamp":"2025-10-08T03:07:05.970Z"}
 {"level":"info","message":"Conectado ao MongoDB","timestamp":"2025-10-08T03:07:05.992Z"}
+{"level":"info","message":"Requisição recebida: GET /api/units from 192.168.0.183","timestamp":"2025-10-08T03:07:11.040Z"}
+{"level":"info","message":"Autenticação bem-sucedida (JWT) para usuário: admin, Setor: Global","timestamp":"2025-10-08T03:07:11.044Z"}
+{"level":"info","message":"Lista de unidades solicitada por admin: 2 unidades","timestamp":"2025-10-08T03:07:11.051Z"}
+{"level":"info","message":"Requisição recebida: GET /api/bssid-mappings from 192.168.0.183","timestamp":"2025-10-08T03:07:11.262Z"}
+{"level":"info","message":"Autenticação bem-sucedida (JWT) para usuário: admin, Setor: Global","timestamp":"2025-10-08T03:07:11.264Z"}
+{"level":"info","message":"JSON retornado para /api/bssid-mappings: [{\"_id\":\"68b4861d06543813fea7fa47\",\"mac_address_radio\":\"a0:a3:f0:0b:f6:14\",\"sector\":\"Casa\",\"floor\":\"6\"}]","timestamp":"2025-10-08T03:07:11.266Z"}
+{"level":"info","message":"Requisição recebida: GET /api/devices from 192.168.0.183","timestamp":"2025-10-08T03:07:11.284Z"}
+{"level":"info","message":"Autenticação bem-sucedida (JWT) para usuário: admin, Setor: Global","timestamp":"2025-10-08T03:07:11.285Z"}
+{"level":"info","message":"Usuário 'admin' (role: admin) solicitando dispositivos com busca.","timestamp":"2025-10-08T03:07:11.286Z"}
+{"level":"info","message":"Lista de dispositivos retornada: 1 de 1 total (Página 1/1)","timestamp":"2025-10-08T03:07:11.294Z"}
+{"level":"info","message":"Requisição recebida: GET /api/devices from 192.168.0.183","timestamp":"2025-10-08T03:07:26.374Z"}
+{"level":"info","message":"Autenticação bem-sucedida (JWT) para usuário: admin, Setor: Global","timestamp":"2025-10-08T03:07:26.376Z"}
+{"level":"info","message":"Usuário 'admin' (role: admin) solicitando dispositivos com busca.","timestamp":"2025-10-08T03:07:26.376Z"}
+{"level":"info","message":"Lista de dispositivos retornada: 1 de 1 total (Página 1/1)","timestamp":"2025-10-08T03:07:26.382Z"}
+{"level":"info","message":"Requisição recebida: GET /api/devices from 192.168.0.183","timestamp":"2025-10-08T03:07:41.366Z"}
+{"level":"info","message":"Autenticação bem-sucedida (JWT) para usuário: admin, Setor: Global","timestamp":"2025-10-08T03:07:41.367Z"}
+{"level":"info","message":"Usuário 'admin' (role: admin) solicitando dispositivos com busca.","timestamp":"2025-10-08T03:07:41.368Z"}
+{"level":"info","message":"Lista de dispositivos retornada: 1 de 1 total (Página 1/1)","timestamp":"2025-10-08T03:07:41.373Z"}
+{"level":"info","message":"Requisição recebida: GET /api/devices from 192.168.0.183","timestamp":"2025-10-08T03:07:57.116Z"}
+{"level":"info","message":"Autenticação bem-sucedida (JWT) para usuário: admin, Setor: Global","timestamp":"2025-10-08T03:07:57.118Z"}
+{"level":"info","message":"Usuário 'admin' (role: admin) solicitando dispositivos com busca.","timestamp":"2025-10-08T03:07:57.118Z"}
+{"level":"info","message":"Lista de dispositivos retornada: 1 de 1 total (Página 1/1)","timestamp":"2025-10-08T03:07:57.122Z"}
+{"level":"info","message":"Requisição recebida: GET /api/devices from 192.168.0.183","timestamp":"2025-10-08T03:08:12.130Z"}
+{"level":"info","message":"Autenticação bem-sucedida (JWT) para usuário: admin, Setor: Global","timestamp":"2025-10-08T03:08:12.131Z"}
+{"level":"info","message":"Usuário 'admin' (role: admin) solicitando dispositivos com busca.","timestamp":"2025-10-08T03:08:12.131Z"}
+{"level":"info","message":"Lista de dispositivos retornada: 1 de 1 total (Página 1/1)","timestamp":"2025-10-08T03:08:12.135Z"}
+{"level":"info","message":"Requisição recebida: GET /api/devices from 192.168.0.183","timestamp":"2025-10-08T03:08:27.124Z"}
+{"level":"info","message":"Autenticação bem-sucedida (JWT) para usuário: admin, Setor: Global","timestamp":"2025-10-08T03:08:27.125Z"}
+{"level":"info","message":"Usuário 'admin' (role: admin) solicitando dispositivos com busca.","timestamp":"2025-10-08T03:08:27.125Z"}
+{"level":"info","message":"Lista de dispositivos retornada: 1 de 1 total (Página 1/1)","timestamp":"2025-10-08T03:08:27.129Z"}
+{"level":"info","message":"Requisição recebida: GET /api/devices from 192.168.0.183","timestamp":"2025-10-08T03:08:42.121Z"}
+{"level":"info","message":"Autenticação bem-sucedida (JWT) para usuário: admin, Setor: Global","timestamp":"2025-10-08T03:08:42.122Z"}
+{"level":"info","message":"Usuário 'admin' (role: admin) solicitando dispositivos com busca.","timestamp":"2025-10-08T03:08:42.123Z"}
+{"level":"info","message":"Lista de dispositivos retornada: 1 de 1 total (Página 1/1)","timestamp":"2025-10-08T03:08:42.127Z"}
+{"level":"info","message":"Requisição recebida: GET /api/devices from 192.168.0.183","timestamp":"2025-10-08T03:08:57.125Z"}
+{"level":"info","message":"Autenticação bem-sucedida (JWT) para usuário: admin, Setor: Global","timestamp":"2025-10-08T03:08:57.126Z"}
+{"level":"info","message":"Usuário 'admin' (role: admin) solicitando dispositivos com busca.","timestamp":"2025-10-08T03:08:57.127Z"}
+{"level":"info","message":"Lista de dispositivos retornada: 1 de 1 total (Página 1/1)","timestamp":"2025-10-08T03:08:57.130Z"}
+{"level":"info","message":"Requisição recebida: GET /api/devices from 192.168.0.183","timestamp":"2025-10-08T03:09:35.131Z"}
+{"level":"info","message":"Autenticação bem-sucedida (JWT) para usuário: admin, Setor: Global","timestamp":"2025-10-08T03:09:35.132Z"}
+{"level":"info","message":"Usuário 'admin' (role: admin) solicitando dispositivos com busca.","timestamp":"2025-10-08T03:09:35.132Z"}
+{"level":"info","message":"Lista de dispositivos retornada: 1 de 1 total (Página 1/1)","timestamp":"2025-10-08T03:09:35.136Z"}
+{"level":"info","message":"Executando tarefa agendada para verificação de status dos dispositivos.","timestamp":"2025-10-08T03:10:00.023Z"}
+{"level":"info","message":"Nenhum dispositivo precisou de atualização de status nesta execução.","timestamp":"2025-10-08T03:10:00.031Z"}
+{"level":"info","message":"Requisição recebida: GET /api/devices from 192.168.0.183","timestamp":"2025-10-08T03:10:35.127Z"}
+{"level":"info","message":"Autenticação bem-sucedida (JWT) para usuário: admin, Setor: Global","timestamp":"2025-10-08T03:10:35.129Z"}
+{"level":"info","message":"Usuário 'admin' (role: admin) solicitando dispositivos com busca.","timestamp":"2025-10-08T03:10:35.130Z"}
+{"level":"info","message":"Lista de dispositivos retornada: 1 de 1 total (Página 1/1)","timestamp":"2025-10-08T03:10:35.134Z"}
