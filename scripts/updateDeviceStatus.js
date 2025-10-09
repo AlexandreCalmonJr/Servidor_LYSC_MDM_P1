@@ -1,63 +1,74 @@
+const mongoose = require('mongoose');
+const winston = require('winston');
 const Device = require('../models/Device');
+const connectDB = require('../config/db');
 
-// Define os limites de tempo
-const OFFLINE_THRESHOLD_MINUTES = 60;
-const UNMONITORED_THRESHOLD_DAYS = 5;
+const logger = winston.createLogger({
+  level: 'info',
+  format: winston.format.combine(
+    winston.format.timestamp(),
+    winston.format.json()
+  ),
+  transports: [
+    new winston.transports.Console(),
+    new winston.transports.File({ filename: 'logs/updateStatus.log' })
+  ],
+});
 
-/**
- * Atualiza o status dos dispositivos com base na inatividade.
- * @param {object} logger - A instância do logger (winston).
- */
-const updateDeviceStatus = async (logger) => {
+// Thresholds
+const OFFLINE_THRESHOLD = 5 * 60 * 1000; // 5 minutos
+const UNMONITORED_THRESHOLD = 5 * 24 * 60 * 60 * 1000; // 5 dias
+
+async function updateDeviceStatus(logger, userRole = 'admin', userSector = 'Global') {
   try {
-    // --- ETAPA 1: Marcar dispositivos 'online' como 'offline' ---
-    const offlineThreshold = new Date(Date.now() - OFFLINE_THRESHOLD_MINUTES * 60 * 1000);
-    
-    const offlineResult = await Device.updateMany(
-      {
-        last_seen: { $lt: offlineThreshold },
-        status: 'online', // Apenas muda quem está 'online'
-        maintenance_status: { $ne: true } // Ignora quem está em manutenção
-      },
-      { 
-        $set: { 
-          status: 'offline',
-          is_online: false
-        } 
+    await connectDB(logger);
+    logger.info('Iniciando atualização de status dos dispositivos...');
+
+    const devices = await Device.find({}).lean();
+    let updatedCount = 0;
+    let offlineCount = 0;
+    let unmonitoredCount = 0;
+
+    for (const device of devices) {
+      const lastSeenDate = new Date(device.last_seen);
+      const now = new Date();
+      const timeDiff = now - lastSeenDate;
+
+      let newStatus = 'online';
+      if (timeDiff > OFFLINE_THRESHOLD) {
+        newStatus = 'offline';
+        offlineCount++;
+        if (timeDiff > UNMONITORED_THRESHOLD) {
+          newStatus = 'sem monitorar';
+          unmonitoredCount++;
+        }
       }
-    );
 
-    if (offlineResult.modifiedCount > 0) {
-      logger.info(`${offlineResult.modifiedCount} dispositivos foram marcados como 'offline'.`);
-    }
-
-    // --- ETAPA 2: Marcar dispositivos 'offline' como 'Sem Monitorar' ---
-    const unmonitoredThreshold = new Date(Date.now() - UNMONITORED_THRESHOLD_DAYS * 24 * 60 * 60 * 1000);
-
-    const unmonitoredResult = await Device.updateMany(
-      {
-        last_seen: { $lt: unmonitoredThreshold },
-        status: 'offline', // Apenas muda quem já está 'offline'
-        maintenance_status: { $ne: true }
-      },
-      { 
-        $set: { 
-          status: 'Sem Monitorar'
-        } 
+      // Filtrar por setor se user (não admin)
+      if (userRole === 'user' && userSector !== 'Global') {
+        const prefixes = userSector.split(',').map(p => p.trim().toLowerCase());
+        const deviceName = (device.device_name || '').toLowerCase();
+        if (!prefixes.some(prefix => deviceName.startsWith(prefix))) {
+          continue;
+        }
       }
-    );
 
-    if (unmonitoredResult.modifiedCount > 0) {
-      logger.info(`${unmonitoredResult.modifiedCount} dispositivos foram marcados como 'Sem Monitorar'.`);
+      // Atualiza se o status mudou
+      if (device.status !== newStatus) {
+        await Device.findByIdAndUpdate(device._id, { status: newStatus });
+        logger.info(`Status atualizado para ${device.serial_number}: ${device.status || 'undefined'} -> ${newStatus}`);
+        updatedCount++;
+      }
     }
 
-    if (offlineResult.modifiedCount === 0 && unmonitoredResult.modifiedCount === 0) {
-      logger.info('Nenhum dispositivo precisou de atualização de status nesta execução.');
-    }
-
-  } catch (error) {
-    logger.error('Erro durante a tarefa de atualização de status dos dispositivos:', { message: error.message });
+    logger.info(`Atualização concluída: ${updatedCount} status alterados, ${offlineCount} offline, ${unmonitoredCount} sem monitorar.`);
+  } catch (err) {
+    logger.error(`Erro ao atualizar status: ${err.message}`);
   }
-};
+}
 
 module.exports = updateDeviceStatus;
+
+if (require.main === module) {
+  connectDB(logger).then(() => updateDeviceStatus(logger)).catch(err => logger.error(err));
+}
