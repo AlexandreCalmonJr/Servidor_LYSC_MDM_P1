@@ -50,3 +50,34 @@
 {"level":"info","message":"Autenticação bem-sucedida (JWT) para usuário: admin, Setor: Global","timestamp":"2025-10-08T03:10:35.129Z"}
 {"level":"info","message":"Usuário 'admin' (role: admin) solicitando dispositivos com busca.","timestamp":"2025-10-08T03:10:35.130Z"}
 {"level":"info","message":"Lista de dispositivos retornada: 1 de 1 total (Página 1/1)","timestamp":"2025-10-08T03:10:35.134Z"}
+{"level":"info","message":"🚀 MDM Server rodando em http://10.71.1.209:3000","timestamp":"2025-10-08T10:16:23.288Z"}
+{"level":"info","message":"📱 Provisionamento disponível em: http://10.71.1.209:3000/provision/{token}","timestamp":"2025-10-08T10:16:23.293Z"}
+{"level":"info","message":"📊 Dashboard disponível em: http://10.71.1.209:3000/dashboard","timestamp":"2025-10-08T10:16:23.298Z"}
+{"level":"info","message":"Conectado ao MongoDB","timestamp":"2025-10-08T10:16:23.311Z"}
+{"level":"info","message":"Requisição recebida: GET /api/units from 10.1.17.33","timestamp":"2025-10-08T10:16:27.181Z"}
+{"level":"info","message":"Autenticação bem-sucedida (JWT) para usuário: admin1, Setor: Global","timestamp":"2025-10-08T10:16:27.183Z"}
+{"level":"info","message":"Lista de unidades solicitada por admin1: 3 unidades","timestamp":"2025-10-08T10:16:27.188Z"}
+{"level":"info","message":"Requisição recebida: GET /api/bssid-mappings from 10.1.17.33","timestamp":"2025-10-08T10:16:27.328Z"}
+{"level":"info","message":"Autenticação bem-sucedida (JWT) para usuário: admin1, Setor: Global","timestamp":"2025-10-08T10:16:27.330Z"}
+{"level":"info","message":"JSON retornado para /api/bssid-mappings: [{\"_id\":\"68e53abef738faed71686aa1\",\"mac_address_radio\":\"00:11:22:33:44:55\",\"sector\":\"Hotelaria\",\"floor\":\"1\"},{\"_id\":\"68e53bf5f738faed71686b73\",\"mac_address_radio\":\"00:11:22:33:44:59\",\"sector\":\"Hotelaria\",\"floor\":\"1\"},{\"_id\":\"68e53e1513db81cfea86ba04\",\"mac_address_radio\":\"00:11:22:33:44:50\",\"sector\":\"HTL\",\"floor\":\"12\"}]","timestamp":"2025-10-08T10:16:27.331Z"}
+{"level":"info","message":"Requisição recebida: GET /api/devices from 10.1.17.33","timestamp":"2025-10-08T10:16:27.418Z"}
+{"level":"info","message":"Autenticação bem-sucedida (JWT) para usuário: admin1, Setor: Global","timestamp":"2025-10-08T10:16:27.419Z"}
+{"level":"info","message":"Usuário 'admin1' (role: admin) solicitando dispositivos com busca.","timestamp":"2025-10-08T10:16:27.420Z"}
+{"level":"info","message":"Lista de dispositivos retornada: 2 de 2 total (Página 1/1)","timestamp":"2025-10-08T10:16:27.426Z"}
+{"level":"info","message":"Requisição recebida: GET /api/units from 10.71.1.209","timestamp":"2025-10-08T10:18:52.294Z"}
+{"level":"info","message":"Autenticação bem-sucedida (JWT) para usuário: admin1, Setor: Global","timestamp":"2025-10-08T10:18:52.295Z"}
+{"level":"info","message":"Lista de unidades solicitada por admin1: 3 unidades","timestamp":"2025-10-08T10:18:52.297Z"}
+{"level":"info","message":"Requisição recebida: GET /api/bssid-mappings from 10.71.1.209","timestamp":"2025-10-08T10:18:52.304Z"}
+{"level":"info","message":"Autenticação bem-sucedida (JWT) para usuário: admin1, Setor: Global","timestamp":"2025-10-08T10:18:52.305Z"}
+{"level":"info","message":"JSON retornado para /api/bssid-mappings: [{\"_id\":\"68e53abef738faed71686aa1\",\"mac_address_radio\":\"00:11:22:33:44:55\",\"sector\":\"Hotelaria\",\"floor\":\"1\"},{\"_id\":\"68e53bf5f738faed71686b73\",\"mac_address_radio\":\"00:11:22:33:44:59\",\"sector\":\"Hotelaria\",\"floor\":\"1\"},{\"_id\":\"68e53e1513db81cfea86ba04\",\"mac_address_radio\":\"00:11:22:33:44:50\",\"sector\":\"HTL\",\"floor\":\"12\"}]","timestamp":"2025-10-08T10:18:52.307Z"}
+{"level":"info","message":"Requisição recebida: GET /api/devices from 10.71.1.209","timestamp":"2025-10-08T10:18:52.310Z"}
+{"level":"info","message":"Autenticação bem-sucedida (JWT) para usuário: admin1, Setor: Global","timestamp":"2025-10-08T10:18:52.311Z"}
+{"level":"info","message":"Usuário 'admin1' (role: admin) solicitando dispositivos com busca.","timestamp":"2025-10-08T10:18:52.311Z"}
+{"level":"info","message":"Lista de dispositivos retornada: 2 de 2 total (Página 1/1)","timestamp":"2025-10-08T10:18:52.319Z"}
+{"level":"info","message":"Executando tarefa agendada para verificação de status dos dispositivos.","timestamp":"2025-10-08T10:20:00.024Z"}
+{"level":"info","message":"Nenhum dispositivo precisou de atualização de status nesta execução.","timestamp":"2025-10-08T10:20:00.033Z"}
+{"level":"info","message":"🚀 MDM Server rodando em http://10.71.1.209:3000","timestamp":"2025-10-11T10:27:37.631Z"}
+{"level":"info","message":"📱 Provisionamento disponível em: http://10.71.1.209:3000/provision/{token}","timestamp":"2025-10-11T10:27:37.644Z"}
+{"level":"info","message":"📊 Dashboard disponível em: http://10.71.1.209:3000/dashboard","timestamp":"2025-10-11T10:27:37.656Z"}
+{"level":"info","message":"Conexão MongoDB configurada com reconexão automática","timestamp":"2025-10-11T10:27:37.656Z"}
+{"level":"info","message":"Conectado ao MongoDB com sucesso","timestamp":"2025-10-11T10:27:37.665Z"}

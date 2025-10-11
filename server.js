@@ -6,7 +6,7 @@ const cron = require('node-cron');
 const path = require('path');
 
 // Lógica de atualização de status agora está em um arquivo separado
-const updateDeviceStatus = require('./scripts/updateDeviceStatus');
+const fixDeviceStatus = require('./scripts/updateDeviceStatus'); // Importa a função
 
 const expressConfig = require('./config/express');
 const connectDB = require('./config/db');
@@ -43,8 +43,8 @@ expressConfig(app, logger);
 // Tarefa agendada para rodar a cada 5 minutos
 cron.schedule('*/5 * * * *', () => {
   logger.info('Executando tarefa agendada para verificação de status dos dispositivos.');
-  // Chama a função importada, que contém toda a lógica
-  updateDeviceStatus(logger);
+  // Chama a função importada
+  fixDeviceStatus(logger);
 });
 
 // Iniciar servidor

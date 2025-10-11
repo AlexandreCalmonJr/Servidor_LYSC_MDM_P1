@@ -37,8 +37,8 @@ const fixDeviceStatus = async () => {
       let newStatus = originalStatus;
       let newIsOnline = device.is_online;
 
-      // Ignora dispositivos em manutenção
       if (device.maintenance_status) {
+        // Ignora dispositivos em manutenção
         continue;
       }
       
@@ -57,12 +57,10 @@ const fixDeviceStatus = async () => {
         newIsOnline = false;
       }
 
-      // Atualiza apenas se mudou
-      if (newStatus !== originalStatus || newIsOnline !== device.is_online) {
-        await Device.findByIdAndUpdate(device._id, { 
-          status: newStatus, 
-          is_online: newIsOnline 
-        });
+      if (newStatus !== originalStatus) {
+        device.status = newStatus;
+        device.is_online = newIsOnline;
+        await device.save();
         correctedCount++;
         console.log(`Dispositivo "${device.device_name}" corrigido de "${originalStatus}" para "${newStatus}".`);
       }
@@ -72,8 +70,8 @@ const fixDeviceStatus = async () => {
 
   } catch (error) {
     console.error('Erro durante a correção do status dos dispositivos:', error);
+  } finally {
+    mongoose.connection.close();
+    console.log('Conexão com o banco de dados fechada.');
   }
 };
-
-// Exporta a função para uso no cron
-module.exports = fixDeviceStatus;
